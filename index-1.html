@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema de Fichas: RP de Vampiro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#150a10;
+  --bg-panel:#1b0f15;
+  --bg-card:#221319;
+  --line:#3a2430;
+  --line-soft:#2a1a22;
+  --ink:#ece0ce;
+  --ink-muted:#a88f7c;
+  --ink-faint:#7a6558;
+  --blood:#8c2334;
+  --blood-bright:#b23349;
+  --gold:#b99456;
+  --gold-soft:#8c744a;
+  --sidebar-w:280px;
+}
+*{box-sizing:border-box;}
+html{scroll-padding-top:2rem;}
+@media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth;} }
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"EB Garamond", Georgia, serif;
+  font-size:18px;
+  line-height:1.65;
+  position:relative;
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  background:radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,.5) 100%);
+}
+h1,h2,h3{
+  font-family:"Cinzel", serif;
+  color:var(--ink);
+  font-weight:600;
+  letter-spacing:.01em;
+  line-height:1.3;
+}
+a{color:var(--gold);}
+b{color:var(--ink);font-weight:600;}
+
+::-webkit-scrollbar{width:10px;height:10px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--line);}
+::-webkit-scrollbar-thumb:hover{background:var(--gold-soft);}
+*{scrollbar-color:var(--line) var(--bg);scrollbar-width:thin;}
+
+/* layout */
+.layout{display:flex;min-height:100vh;position:relative;z-index:1;}
+.sidebar{
+  width:var(--sidebar-w);
+  flex-shrink:0;
+  background:var(--bg-panel);
+  border-right:1px solid var(--line);
+  position:fixed;
+  top:0;left:0;bottom:0;
+  padding:2rem 1.5rem;
+  overflow-y:auto;
+  transform:translateX(-100%);
+  transition:transform .28s ease;
+  z-index:40;
+}
+.sidebar.is-open{transform:translateX(0);}
+@media(min-width:900px){
+  .sidebar{transform:none;}
+  .layout{padding-left:var(--sidebar-w);}
+}
+.sidebar-title{
+  font-family:"Cinzel",serif;
+  font-size:1.15rem;
+  color:var(--gold);
+  margin:0 0 .3rem;
+}
+.sidebar-sub{
+  font-size:.85rem;
+  color:var(--ink-faint);
+  font-style:italic;
+  margin:0 0 1.75rem;
+}
+.search-box{margin:0 0 1.5rem;}
+.search-box input{
+  width:100%;
+  background:var(--bg);
+  border:1px solid var(--line);
+  color:var(--ink);
+  font-family:"EB Garamond",serif;
+  font-size:.92rem;
+  padding:.55rem .7rem;
+  box-sizing:border-box;
+}
+.search-box input:focus{outline:none;border-color:var(--gold-soft);}
+.search-box input::placeholder{color:var(--ink-faint);}
+.search-count{
+  font-size:.78rem;
+  color:var(--gold-soft);
+  font-style:italic;
+  margin:.5rem 0 0;
+}
+.search-hide{display:none !important;}
+.sidebar nav ul{list-style:none;margin:0;padding:0;}
+.sidebar nav li{margin:0;}
+.sidebar nav a{
+  display:flex;
+  align-items:baseline;
+  gap:.6rem;
+  text-decoration:none;
+  color:var(--ink-muted);
+  font-size:.95rem;
+  padding:.5rem .3rem;
+  border-left:2px solid transparent;
+  padding-left:.7rem;
+  transition:color .15s ease, border-color .15s ease;
+}
+.sidebar nav a .num{
+  font-family:"Cinzel",serif;
+  color:var(--gold-soft);
+  font-size:.68rem;
+  margin-right:.7rem;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:1.7em;
+  height:1.7em;
+  flex-shrink:0;
+  border:1px solid var(--line);
+  border-radius:50%;
+  transition:border-color .15s ease, color .15s ease;
+}
+.sidebar nav a:hover{color:var(--ink);}
+.sidebar nav a.active{color:var(--ink);border-left-color:var(--blood-bright);}
+.sidebar nav a.active .num{color:var(--gold);border-color:var(--gold);}
+
+.navbar{
+  display:none;
+  position:sticky;top:0;
+  background:var(--bg-panel);
+  border-bottom:1px solid var(--line);
+  padding:.85rem 1.25rem;
+  align-items:center;
+  gap:.9rem;
+  z-index:30;
+}
+@media(max-width:899px){ .navbar{display:flex;} }
+.navbar .brand{font-family:"Cinzel",serif;color:var(--gold);font-size:1rem;}
+#navToggle{
+  background:none;border:1px solid var(--line);border-radius:3px;
+  width:36px;height:32px;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;
+  cursor:pointer;
+}
+#navToggle span{display:block;width:16px;height:2px;background:var(--gold);}
+
+#navBackdrop{
+  display:none;position:fixed;inset:0;background:rgba(10,4,7,.6);z-index:35;
+}
+#navBackdrop.is-open{display:block;}
+
+main{
+  flex:1;
+  min-width:0;
+  padding:0 1.5rem 6rem;
+}
+.content-inner{max-width:700px;margin:0 auto;}
+
+/* hero */
+.hero{
+  padding:5rem 0 3rem;
+  text-align:left;
+}
+.hero h1{
+  font-size:clamp(2.2rem,5vw,3.4rem);
+  margin:0 0 .6rem;
+}
+.hero .sub{
+  font-style:italic;
+  color:var(--ink-muted);
+  font-size:1.15rem;
+  margin:0 0 2rem;
+}
+.ornament{width:180px;height:18px;stroke:var(--gold-soft);stroke-width:1;fill:none;margin:0 0 1.5rem;}
+.ornament path{fill:var(--gold-soft);stroke:none;}
+.hero .ornament{width:220px;height:22px;}
+
+.crest{
+  width:84px;
+  height:84px;
+  stroke:var(--gold-soft);
+  stroke-width:1;
+  fill:none;
+  color:var(--gold-soft);
+  margin:0 0 1.6rem;
+  display:block;
+}
+
+.dropcap::first-letter{
+  font-family:"Cinzel",serif;
+  font-size:3.1em;
+  float:left;
+  line-height:.78;
+  padding:.04em .1em 0 0;
+  color:var(--gold);
+}
+
+.toc-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  gap:.6rem;
+  margin-top:2.2rem;
+}
+.toc-card{
+  background:var(--bg-card);
+  border:1px solid var(--line);
+  padding:.8rem 1rem;
+  text-decoration:none;
+  display:flex;
+  flex-direction:column;
+  gap:.35rem;
+  transition:border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+}
+.toc-card:hover{
+  border-color:var(--gold-soft);
+  transform:translateY(-2px);
+  box-shadow:0 6px 18px -6px rgba(185,148,86,.3);
+}
+.toc-card .num{font-family:"Cinzel",serif;color:var(--gold);font-size:.8rem;}
+.toc-card .label{color:var(--ink);font-size:.92rem;}
+
+@media (prefers-reduced-motion:no-preference){
+  .ornament, .crest{animation:flicker 5s ease-in-out infinite;}
+}
+@keyframes flicker{
+  0%, 100% { opacity:1; }
+  50% { opacity:.7; }
+}
+
+/* chapters */
+.chapter{padding:2.75rem 0;border-top:1px solid var(--line-soft);}
+.chapter:first-of-type{border-top:none;}
+.chapter-head{display:flex;align-items:baseline;gap:.9rem;margin-bottom:.15rem;}
+.chapter-num{font-family:"Cinzel",serif;color:var(--gold);font-size:1.1rem;margin-right:.9rem;}
+.chapter h2{font-size:1.6rem;margin:0;}
+.chapter h3{font-size:1.15rem;color:var(--gold);margin:2rem 0 .8rem;}
+.chapter p{margin:0 0 1rem;color:var(--ink);}
+.chapter p.tag{
+  display:inline-block;color:var(--blood-bright);font-style:italic;font-size:.9rem;
+  border:1px solid var(--line);padding:.15rem .6rem;border-radius:2px;margin-bottom:1.2rem;
+}
+.epigraph{
+  font-style:italic;
+  color:var(--gold-soft);
+  border-left:2px solid var(--line);
+  padding:.3rem 0 .3rem 1.2rem;
+  margin:1.6rem 0;
+  font-size:1.02rem;
+}
+.formula{
+  font-family:"Cinzel",serif;
+  font-size:1.05rem;
+  color:var(--gold);
+  background:var(--bg-card);
+  border:1px solid var(--line);
+  padding:.7rem 1rem;
+  display:inline-block;
+}
+.formula span{
+  font-family:"EB Garamond",serif;
+  font-style:italic;
+  color:var(--ink-faint);
+  font-size:.85rem;
+  margin-left:.5rem;
+}
+
+/* entries (details) */
+.entry-grid{display:grid;gap:.6rem;margin-top:1rem;}
+.entry-grid.two{grid-template-columns:repeat(auto-fill,minmax(280px,1fr));}
+.entry-grid.one{grid-template-columns:repeat(auto-fill,minmax(320px,1fr));align-items:start;}
+details.entry{
+  background:var(--bg-card);
+  border:1px solid var(--line);
+  padding:.85rem 1rem;
+}
+details.entry summary{
+  cursor:pointer;
+  font-family:"Cinzel",serif;
+  font-size:1rem;
+  color:var(--ink);
+  list-style:none;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+details.entry summary::-webkit-details-marker{display:none;}
+details.entry summary::after{
+  content:"+";
+  color:var(--gold);
+  font-family:"EB Garamond",serif;
+  font-size:1.2rem;
+  margin-left:1rem;
+}
+details.entry[open] summary::after{content:"–";}
+details.entry .entry-body{margin-top:.7rem;padding-top:.7rem;border-top:1px solid var(--line-soft);}
+details.entry .entry-body p{margin:0 0 .6rem;font-size:.97rem;color:var(--ink-muted);}
+details.entry .entry-extra{font-style:italic;color:var(--gold-soft) !important;}
+
+.grau-list{margin:.3rem 0 0;padding-left:1.1rem;color:var(--ink-muted);font-size:.95rem;}
+.grau-list li{margin-bottom:.35rem;}
+.grau-list b{color:var(--gold-soft);}
+
+/* tables */
+.table-wrap{overflow-x:auto;margin:1rem 0 1.5rem;}
+table{border-collapse:collapse;width:100%;font-size:.95rem;}
+thead th{
+  font-family:"Cinzel",serif;
+  font-weight:600;
+  color:var(--gold);
+  text-align:left;
+  padding:.55rem .8rem;
+  border-bottom:1px solid var(--line);
+  white-space:nowrap;
+}
+tbody td{
+  padding:.55rem .8rem;
+  border-bottom:1px solid var(--line-soft);
+  color:var(--ink-muted);
+}
+tbody tr:nth-child(even){background:rgba(255,255,255,.02);}
+
+@media (max-width:640px){
+  .table-wrap table, .table-wrap thead, .table-wrap tbody, .table-wrap th, .table-wrap td, .table-wrap tr{ display:block; width:100%; }
+  .table-wrap thead{ display:none; }
+  .table-wrap tr{ border:1px solid var(--line); margin-bottom:.7rem; padding:.6rem .8rem; }
+  .table-wrap td{
+    border-bottom:1px solid var(--line-soft);
+    padding:.4rem 0;
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:1rem;
+    text-align:right;
+  }
+  .table-wrap td:last-child{ border-bottom:none; }
+  .table-wrap td::before{
+    content:attr(data-label);
+    color:var(--gold-soft);
+    font-family:"Cinzel",serif;
+    font-size:.72rem;
+    text-align:left;
+    flex-shrink:0;
+  }
+}
+
+/* classes */
+.class-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin-top:1rem;}
+.class-card{background:var(--bg-card);border:1px solid var(--line);padding:1.1rem 1.2rem;}
+.class-card h3{margin:0 0 .5rem;font-size:1.15rem;color:var(--gold);}
+.class-desc{font-size:.93rem;color:var(--ink-muted);margin:0 0 .9rem;}
+.class-stats{display:grid;grid-template-columns:1fr 1fr;gap:.4rem .8rem;margin:0 0 .8rem;}
+.class-stats div{display:flex;justify-content:space-between;border-bottom:1px solid var(--line-soft);padding-bottom:.2rem;}
+.class-stats dt{color:var(--ink-faint);font-size:.85rem;}
+.class-stats dd{margin:0;color:var(--ink);font-size:.85rem;}
+.class-vant{font-size:.88rem;font-style:italic;color:var(--gold-soft);margin:0;}
+
+.open-list{padding-left:1.2rem;color:var(--ink-muted);}
+.open-list li{margin-bottom:.4rem;}
+
+.tool-box{
+  background:var(--bg-card);
+  border:1px solid var(--line);
+  padding:1.2rem 1.3rem;
+  margin:1.2rem 0;
+}
+.tool-box h3{margin:0 0 .8rem;}
+.tool-hint{font-size:.88rem;color:var(--ink-muted);margin:0 0 1rem;}
+.dice-controls{display:flex;flex-wrap:wrap;align-items:end;gap:.9rem;}
+.dice-controls label, .calc-grid label{
+  display:flex;
+  flex-direction:column;
+  gap:.3rem;
+  font-size:.8rem;
+  color:var(--gold-soft);
+  font-family:"Cinzel",serif;
+}
+.dice-controls input, .dice-controls select,
+.calc-grid input, .calc-class-label select{
+  background:var(--bg);
+  border:1px solid var(--line);
+  color:var(--ink);
+  font-family:"EB Garamond",serif;
+  font-size:.95rem;
+  padding:.4rem .5rem;
+  width:6rem;
+}
+.dice-controls button{
+  background:var(--blood);
+  border:1px solid var(--blood-bright);
+  color:var(--ink);
+  font-family:"Cinzel",serif;
+  font-size:.85rem;
+  padding:.55rem 1.1rem;
+  cursor:pointer;
+  transition:background .15s ease;
+}
+.dice-controls button:hover{background:var(--blood-bright);}
+.dice-result{margin-top:1rem;min-height:2.2rem;display:flex;align-items:baseline;gap:.8rem;}
+.dice-result .dice-total{font-family:"Cinzel",serif;font-size:1.8rem;color:var(--gold);}
+.dice-result .dice-detail{font-size:.85rem;color:var(--ink-faint);font-style:italic;}
+.calc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:.8rem;margin-bottom:1rem;}
+.calc-grid input{width:100%;box-sizing:border-box;}
+.calc-class-label{display:flex;flex-direction:column;gap:.3rem;font-size:.8rem;color:var(--gold-soft);font-family:"Cinzel",serif;max-width:220px;margin-bottom:1rem;}
+.calc-class-label select{width:100%;box-sizing:border-box;}
+.calc-result{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.6rem;}
+.calc-result div{background:var(--bg);border:1px solid var(--line-soft);padding:.6rem .8rem;display:flex;flex-direction:column;gap:.2rem;}
+.calc-result span{font-size:.72rem;color:var(--ink-faint);font-family:"Cinzel",serif;}
+.calc-result b{color:var(--gold);font-size:1.15rem;font-weight:600;}
+
+footer{
+  max-width:700px;margin:0 auto;padding:2rem 1.5rem 4rem;
+  color:var(--ink-faint);font-size:.85rem;font-style:italic;
+  border-top:1px solid var(--line-soft);
+}
+
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
+</style>
+</head>
+<body>
+
+<div class="navbar">
+  <button id="navToggle" aria-expanded="false" aria-controls="sidebar" aria-label="Abrir índice">
+    <span></span><span></span><span></span>
+  </button>
+  <span class="brand">Sistema de Fichas</span>
+</div>
+<div id="navBackdrop"></div>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <p class="sidebar-title">Sistema de Fichas</p>
+    <p class="sidebar-sub">RP de Vampiro, França, séculos XVI a XVIII</p>
+    <div class="search-box">
+      <input type="search" id="pageSearch" placeholder="Buscar perícia, arma, magia..." aria-label="Buscar no sistema">
+      <p id="searchCount" class="search-count" hidden></p>
+    </div>
+    <nav aria-label="Índice">
+      <ul><li><a href="#visao-geral" data-target="visao-geral"><span class="num">I</span>Visão Geral</a></li>
+<li><a href="#o-mundo" data-target="o-mundo"><span class="num">II</span>O Mundo</a></li>
+<li><a href="#sinopse" data-target="sinopse"><span class="num">III</span>Sinopse</a></li>
+<li><a href="#mecanica" data-target="mecanica"><span class="num">IV</span>Mecânica de Teste</a></li>
+<li><a href="#atributos" data-target="atributos"><span class="num">V</span>Atributos</a></li>
+<li><a href="#recursos" data-target="recursos"><span class="num">VI</span>Recursos</a></li>
+<li><a href="#pericias" data-target="pericias"><span class="num">VII</span>Perícias Comuns</a></li>
+<li><a href="#pericias-especiais" data-target="pericias-especiais"><span class="num">VIII</span>Perícias Especiais</a></li>
+<li><a href="#disciplinas" data-target="disciplinas"><span class="num">IX</span>Disciplinas</a></li>
+<li><a href="#magia" data-target="magia"><span class="num">X</span>Sistema de Magia</a></li>
+<li><a href="#combate" data-target="combate"><span class="num">XI</span>Combate</a></li>
+<li><a href="#inventario" data-target="inventario"><span class="num">XII</span>Inventário</a></li>
+<li><a href="#raca-vampiro" data-target="raca-vampiro"><span class="num">XIII</span>Raça Vampiro</a></li>
+<li><a href="#classes" data-target="classes"><span class="num">XIV</span>Classes</a></li>
+<li><a href="#habilidades-iniciais" data-target="habilidades-iniciais"><span class="num">XV</span>Habilidades Iniciais</a></li>
+<li><a href="#progressao" data-target="progressao"><span class="num">XVI</span>Progressão</a></li>
+<li><a href="#ferramentas" data-target="ferramentas"><span class="num">XVII</span>Ferramentas</a></li>
+<li><a href="#em-aberto" data-target="em-aberto"><span class="num">XVIII</span>Em Aberto</a></li></ul>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="content-inner">
+      <div class="hero">
+        <svg class="crest" viewBox="0 0 120 120" aria-hidden="true">
+  <circle cx="60" cy="60" r="52"/>
+  <circle cx="60" cy="60" r="44"/>
+  <path d="M60 6 L65 20 L60 34 L55 20 Z"/>
+  <path d="M60 114 L65 100 L60 86 L55 100 Z"/>
+  <path d="M6 60 L20 55 L34 60 L20 65 Z"/>
+  <path d="M114 60 L100 55 L86 60 L100 65 Z"/>
+  <circle cx="60" cy="60" r="3.5" fill="currentColor" stroke="none"/>
+</svg>
+        <h1>Sistema de Fichas</h1>
+        <p class="sub">RP de Vampiro, França, séculos XVI a XVIII</p>
+        <div class="toc-grid"><a class="toc-card" href="#visao-geral"><span class="num">I</span><span class="label">Visão Geral</span></a>
+<a class="toc-card" href="#o-mundo"><span class="num">II</span><span class="label">O Mundo</span></a>
+<a class="toc-card" href="#sinopse"><span class="num">III</span><span class="label">Sinopse</span></a>
+<a class="toc-card" href="#mecanica"><span class="num">IV</span><span class="label">Mecânica de Teste</span></a>
+<a class="toc-card" href="#atributos"><span class="num">V</span><span class="label">Atributos</span></a>
+<a class="toc-card" href="#recursos"><span class="num">VI</span><span class="label">Recursos</span></a>
+<a class="toc-card" href="#pericias"><span class="num">VII</span><span class="label">Perícias Comuns</span></a>
+<a class="toc-card" href="#pericias-especiais"><span class="num">VIII</span><span class="label">Perícias Especiais</span></a>
+<a class="toc-card" href="#disciplinas"><span class="num">IX</span><span class="label">Disciplinas</span></a>
+<a class="toc-card" href="#magia"><span class="num">X</span><span class="label">Sistema de Magia</span></a>
+<a class="toc-card" href="#combate"><span class="num">XI</span><span class="label">Combate</span></a>
+<a class="toc-card" href="#inventario"><span class="num">XII</span><span class="label">Inventário</span></a>
+<a class="toc-card" href="#raca-vampiro"><span class="num">XIII</span><span class="label">Raça Vampiro</span></a>
+<a class="toc-card" href="#classes"><span class="num">XIV</span><span class="label">Classes</span></a>
+<a class="toc-card" href="#habilidades-iniciais"><span class="num">XV</span><span class="label">Habilidades Iniciais</span></a>
+<a class="toc-card" href="#progressao"><span class="num">XVI</span><span class="label">Progressão</span></a>
+<a class="toc-card" href="#ferramentas"><span class="num">XVII</span><span class="label">Ferramentas</span></a>
+<a class="toc-card" href="#em-aberto"><span class="num">XVIII</span><span class="label">Em Aberto</span></a></div>
+      </div>
+
+      
+<section class="chapter" id="visao-geral">
+  <header class="chapter-head">
+    <span class="chapter-num">I</span>
+    <h2>Visão Geral</h2>
+  </header>
+  <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
+
+  <p class="dropcap">Este documento reúne toda a estrutura mecânica fechada até agora: atributos, recursos, perícias, perícias especiais, disciplinas vampíricas, magia, combate, inventário, raça vampiro, classes e o esboço de honra e reputação.</p>
+  <p>A ficha de personagem terá duas partes distintas: a <b>ficha sistemática</b>, números e mecânicas, descrita aqui, e a <b>ficha de lore</b>, com biografia e personalidade, em documento separado. Economia ainda está em desenvolvimento.</p>
+</section>
+<section class="chapter" id="o-mundo">
+  <header class="chapter-head">
+    <span class="chapter-num">II</span>
+    <h2>O Mundo</h2>
+  </header>
+  <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
+
+  <div class="epigraph">"O caos é a origem de todas as coisas malignas do universo. Nascendo do ódio, da energia negativa e das falhas da humanidade. Enquanto houver maldade no coração dos humanos o Caos continuará seu reinado de terror."</div>
+
+  <h3>Século XV, Valáquia</h3>
+  <p class="dropcap">Fazem três séculos desde que as criaturas demoníacas e os ataques de vampiros sumiram completamente. Desde então a humanidade esqueceu da existência deles, já que foram considerados extintos.</p>
+  <p>No século XV a humanidade sofreu o Grande Expurgo, depois que Lisa Tepes, esposa de Vlad Drácula Tepes, foi morta por uma turba enfurecida de pessoas que acreditavam que ela era uma bruxa, já que na época a igreja tinha poder sobre a mentalidade do povo e reprovava qualquer ideia que não envolvesse a Bíblia.</p>
+  <p>Após Drácula ficar ciente da morte de sua amada esposa, o vampiro convocou um exército de criaturas demoníacas vindas diretamente do inferno para dizimar a humanidade, atingindo toda a Europa.</p>
+  <p>Toda a Europa foi afetada, atacada por enxurradas de demônios e doenças, uma verdadeira carnificina que não acontecia desde as primeiras cruzadas em busca da terra santa.</p>
+  <p>O reino de terror só veio a acabar, depois de um período de cem anos, graças a quatro pessoas: Trevor Belmont, Sypha Belnades, Grant Danasty e Alucard (Adrian Fahrenheit Tepes, filho do próprio Drácula).</p>
+
+  <h3>Século XVIII, França (1790)</h3>
+  <p>Os países europeus conseguiram se reerguer, e o fato de que haviam passado por um verdadeiro inferno foi totalmente esquecido pela humanidade; afinal, tinham problemas humanos para resolver. Esse fato acabou se tornando apenas uma grande lenda contada pelos mais velhos; mesmo tendo registros, quase ninguém acredita.</p>
+  <p>A França agora passa por uma enorme crise financeira graças aos gastos excessivos em guerras, serviços militares e à mordomia da corte. A solução que encontraram para tentar sair da crise foi aumentar os impostos. Com esse aumento, as coisas ficaram ainda mais difíceis, principalmente para os camponeses que lutavam contra a fome, enquanto os nobres esbanjavam suas riquezas, já que não tinham a necessidade de pagar impostos absurdos.</p>
+  <p>Isso levou a uma grande revolta; não dava mais para suportar essa desigualdade. A solução foi derrubar a Bastilha, já que a prisão era vista como um símbolo de autoridade do rei: qualquer pessoa que supostamente fosse contra o rei acabava presa ali até apodrecer. Assim o rei perdeu o poder absoluto, e a maioria das decisões passaram a ser tomadas pela Assembleia Constituinte.</p>
+  <p>A sociedade ainda é dividida pelos três estados, mas agora com limitações; o clero perdeu grande parte das terras e seu poder absoluto. Já a nobreza começou a perder seus títulos e seus direitos, gerando revolta, e os camponeses (ou sans-culottes) ainda tinham fome; o pão ainda é escasso, mas eles continuam firmes e fortes na busca dos seus direitos e pela igualdade.</p>
+  <p>Mas as pessoas, aos poucos, estão perdendo a fé em Deus, dando lugar ao ódio. As revoltas ainda existem e são mais violentas do que de costume; as execuções passaram a ser mais brutais, utilizando métodos que não eram utilizados há décadas.</p>
+  <p>Acontece que a fé é o que mantém as criaturas da noite seladas no inferno e impede o retorno de Drácula. Mas, ao perder a fé, é só questão de tempo para que Drácula e as trevas voltem a tomar a Europa.</p>
+  <p>Atualmente estamos no ano de 1790. A revolução vem ganhando mais visibilidade, tanto negativa, com os nobres e burgueses se recusando a cooperar e causando derramamento de sangue, quanto positiva, com os sans-culottes finalmente perdendo o medo e lutando pelos seus direitos. Mas há coisas estranhas ocorrendo; além da brutalidade, de forma sutil, os sinais do lorde das trevas vêm acometendo a Europa novamente. Mas ainda é cedo para se preocupar, não? Vocês têm uma revolução inteira para lutar pelos seus direitos. Quem se importa com esse tal lorde das trevas? Será que é apenas ele, ou tem algo muito mais profundo?</p>
+
+  <div class="epigraph">Le destin des aristocrates est la mort.</div>
+</section>
+<section class="chapter" id="sinopse">
+  <header class="chapter-head">
+    <span class="chapter-num">III</span>
+    <h2>Sinopse</h2>
+  </header>
+  <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
+
+  <div class="epigraph">"Dans cette cérémonie éblouissante, nourris la nuit éternelle, mon cher... Baptism of blood."</div>
+
+  <p class="dropcap">Já se passaram três séculos desde que a Europa foi devastada pelo Lorde das Trevas. Agora, no século XVIII, no ano de 1790, a França enfrenta um sério problema; além da desigualdade social entre a plebe e a nobreza, vêm acontecendo coisas extremamente estranhas. Vários eclipses de lua de sangue começaram a surgir no céu, várias pessoas são encontradas mortas sem nenhuma gota de sangue, símbolos esquisitos começam a aparecer nas estruturas. Alguns procuraram aqueles que juraram derrotar o senhor das trevas em busca de respostas, mas nenhum parecia estar na Europa. Agora as pessoas não só precisam se preocupar com a desigualdade imposta pelo absolutismo monárquico, mas também com o perigo que esses sinais significam, antes que seja tarde demais.</p>
+
+  <p>A semana começou com algumas notícias bem escandalosas, uma delas foi o atentado contra o rei, onde Joseph Valentin Bernhard foi condenado à execução na Place de Grève, às 19h40 do dia 12 de julho de 1790.</p>
+
+  <p>Esse dia chegou, o ar estava mais pesado que o normal, não aquela preocupação de como alguns iriam pagar os impostos, não mesmo. Aquele dia definitivamente seria estranho. Realmente foi.</p>
+
+  <p>Tudo começou com algumas pessoas chegando alguns minutos antes da chegada do condenado. Era possível ouvir os gritos de agonia vindos da Catedral de Notre-Dame, onde padres refratários resistiam ao juramento da recém-promulgada Constituição Civil do Clero; os relatos daquela agonia ecoavam tão fortes quanto os do suplício de Damiens.</p>
+
+  <p>Enquanto o condenado estava a caminho, foi determinado que Marie Louise Sanson, a Prevotte de L'hôtel, iria performar na execução de Bernhard. Alguns reagiram com repulsa apenas por ela ser uma mulher, já que o ofício é realizado por um homem.</p>
+
+  <p>Quando o homem foi jogado no cadafalso, ele se jogou aos pés de Marie, implorando para salvar as pessoas realmente inocentes do convento. Marie apenas o posicionou para realizar a execução com a sua espada, já que não havia conseguido os instrumentos para outros métodos de execução.</p>
+
+  <p>Marie o executou, uma cena hedionda na visão dos cidadãos de Paris. Mas, ao se passarem apenas alguns minutos, o céu ganhou uma cor vermelho-sangue e uma rachadura se abriu revelando um enorme portal.</p>
+
+  <p>Daquele portal saiu uma criatura enorme, uma besta de três cabeças conhecida como Cerberus. <i>Eu já vi antes... com toda certeza já vi antes.</i> Os cidadãos ficaram completamente assustados, mas conseguiram batalhar contra aquele demônio, isso é admirável.</p>
+
+  <p>O portal continuou aberto e, quando acharam que finalmente iriam poder voltar para as suas moradias, outro monstro saiu dele, um amontoado de corpos em uma esfera. Quando ela se deslocava, vários corpos caíam no chão e iam em direção às pessoas para atacá-las.</p>
+
+  <p>A aberração recebeu ataques de bolas de fogo, e isso foi o suficiente pra criatura começar a se mover rapidamente até os cidadãos. Mas, quando ela iria atacar, um som de lâmina pairou sobre a Place de Grève e a criatura explodiu.</p>
+
+  <p>Após a morte da criatura, foi revelada a pessoa por trás da morte da legião: uma figura alta, cabelos platinados e roupas pretas com detalhes dourados. <i>Pelas minhas leituras, ele seria o filho do lorde das trevas? Definitivamente, devo procurar mais relatos.</i></p>
+
+  <p>É aqui que acabo o registro dos últimos acontecimentos, e eu me sinto péssimo com isso.</p>
+
+  <div class="epigraph">Liberté, Égalité, Fraternité, ou celui qui est tombé du ciel.</div>
+</section>
+<section class="chapter" id="mecanica">
+  <header class="chapter-head">
+    <span class="chapter-num">IV</span>
+    <h2>Mecânica de Teste</h2>
+  </header>
+  <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
+
+  <p>Toda ação relevante é resolvida rolando 1d20, somado ao atributo pertinente e à perícia usada, contra a Dificuldade da ação.</p>
+  <p class="formula">1d20 + Atributo + Perícia</p>
+  <p>Rolar mais de um dado numa mesma ação é raro. Só ocorre por meio de uma Disciplina, uma classe específica ou um item com essa propriedade explícita.</p>
+  <h3>Tabela de Dificuldade</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>DT</th><th>Nível</th></tr></thead>
+    <tbody><tr data-search="10"><td data-label="DT">10</td><td data-label="Nível">Fácil</td></tr>
+<tr data-search="15"><td data-label="DT">15</td><td data-label="Nível">Médio</td></tr>
+<tr data-search="20"><td data-label="DT">20</td><td data-label="Nível">Difícil</td></tr>
+<tr data-search="25"><td data-label="DT">25</td><td data-label="Nível">Muito difícil</td></tr>
+<tr data-search="30"><td data-label="DT">30</td><td data-label="Nível">Quase impossível, ainda com chance</td></tr>
+<tr data-search="35+"><td data-label="DT">35+</td><td data-label="Nível">Sobe a partir daqui</td></tr></tbody>
+  </table></div>
+</section>
+<section class="chapter" id="atributos">
+  <header class="chapter-head">
+    <span class="chapter-num">V</span>
+    <h2>Atributos</h2>
+  </header>
+  <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
+
+  <p>6 pontos para distribuir entre os 6 atributos na criação do personagem.</p>
+  <div class="entry-grid two">
+    <details class="entry" data-search="força">
+      <summary>Força</summary>
+      <div class="entry-body">
+        <p>Representa a potência física do personagem. Usada para arrombar portas, carregar ou empurrar peso, resistir a fadiga corporal e determinar o dano em ataques corpo a corpo.</p>
+        <p class="entry-extra">Limite humano 3 · Limite vampiro 5</p>
+      </div>
+    </details>
+
+    <details class="entry" data-search="destreza">
+      <summary>Destreza</summary>
+      <div class="entry-body">
+        <p>Mede agilidade, equilíbrio, coordenação motora e reflexos físicos. Base para ações rápidas e precisas, como esquivar de golpes, mirar com arma e se mover sem fazer barulho.</p>
+        <p class="entry-extra">Limite humano 3 · Limite vampiro 5</p>
+      </div>
+    </details>
+
+    <details class="entry" data-search="vitalidade">
+      <summary>Vitalidade</summary>
+      <div class="entry-body">
+        <p>Representa a resistência física e a saúde do personagem. Determina o quanto de dano ou desgaste o corpo aguenta antes de ceder, e a capacidade de resistir a cansaço, fome e privação.</p>
+        <p class="entry-extra">Limite humano 3 · Limite vampiro 5</p>
+      </div>
+    </details>
+
+    <details class="entry" data-search="razão">
+      <summary>Razão</summary>
+      <div class="entry-body">
+        <p>Representa o intelecto, o raciocínio lógico, a memória e a capacidade de aprender. Usada em tudo que envolve análise, dedução, estudo ou conhecimento técnico.</p>
+        <p class="entry-extra">Limite humano 6 · Limite vampiro sem limite definido</p>
+      </div>
+    </details>
+
+    <details class="entry" data-search="vontade">
+      <summary>Vontade</summary>
+      <div class="entry-body">
+        <p>Mede a força mental e a presença do personagem. Determina a resistência dele contra manipulação e medo, e também sua capacidade de influenciar outras pessoas pela determinação ou pelo magnetismo pessoal.</p>
+        <p class="entry-extra">Sem limite, humano ou vampiro</p>
+      </div>
+    </details>
+
+    <details class="entry" data-search="alma">
+      <summary>Alma</summary>
+      <div class="entry-body">
+        <p>Representa a essência espiritual do personagem e sua ligação com o sobrenatural. Está ligada à resistência contra efeitos místicos, à percepção de presenças fora do natural e ao contato com o oculto.</p>
+        <p class="entry-extra">Sem limite, humano ou vampiro</p>
+      </div>
+    </details></div>
+</section>
+<section class="chapter" id="recursos">
+  <header class="chapter-head">
+    <span class="chapter-num">VI</span>
+    <h2>Recursos</h2>
+  </header>
+  <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
+
+  <p class="formula">Vida = Vitalidade × 5 <span>(+ bônus da classe)</span></p>
+  <p class="formula">Sanidade = Vontade × 5 <span>(+ bônus da classe)</span></p>
+  <p class="formula">Mana = (Alma + Vontade) × 3 <span>(+ bônus da classe)</span></p>
+  <p class="formula">Estamina = (Força + Vitalidade) × 3 <span>(+ bônus da classe)</span></p>
+  <p>Mana e Estamina se recuperam ao descansar ou ao fim de uma cena. O ritmo depende da ordem cronológica das cenas, a critério do mestre. Meditar ou dormir durante uma cena também recupera as duas.</p>
+</section>
+<section class="chapter" id="pericias">
+  <header class="chapter-head">
+    <span class="chapter-num">VII</span>
+    <h2>Perícias Comuns</h2>
+  </header>
+  <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
+
+  <p>25 pontos para distribuir na criação, com máximo de 7 pontos em uma mesma perícia. O atributo somado no teste depende da ação e do contexto da cena, não é fixo por perícia.</p>
+  <div class="entry-grid two">
+    <details class="entry" data-search="acrobacia">
+      <summary>Acrobacia</summary>
+      <div class="entry-body">
+        <p>Controle do próprio corpo em situações difíceis. Serve pra reduzir dano de quedas, manter o equilíbrio em superfícies instáveis, escapar de amarras, se levantar rápido depois de cair e passar por espaços apertados.</p>
+        
+      </div>
+    </details>
+
+    <details class="entry" data-search="atletismo">
+      <summary>Atletismo</summary>
+      <div class="entry-body">
+        <p>Esforço físico contínuo: correr, escalar, nadar e saltar, cobrindo distâncias específicas. Falhar num teste de Atletismo pode resultar em queda, afogamento ou simplesmente não conseguir continuar o esforço.</p>
+        
+      </div>
+    </details>
+
+    <details class="entry" data-search="furtividade">
+      <summary>Furtividade</summary>
+      <div class="entry-body">
+        <p>Capacidade de passar despercebido. Usada pra se esconder, seguir alguém sem ser notado ou realizar qualquer ação sem chamar atenção.</p>
+        
+      </div>
+    </details>
+
+    <details class="entry" data-search="reflexos">
+      <summary>Reflexos</summary>
+      <div class="entry-body">
+        <p>Velocidade de reação do corpo diante de perigo súbito. Usada como teste de resistência contra efeitos que pedem reação imediata, como armadilhas, explosões ou algo caindo em cima do personagem.</p>
+        
+      </div>
+    </details>
+
+    <details class="entry" data-search="fortitude">
+      <summary>Fortitude</summary>
+      <div class="entry-body">
+        <p>Resistência física do corpo contra agressões internas. Usada em testes contra venenos, paralisias, frio extremo, doenças e qualquer efeito que ataque o corpo por dentro.</p>
+        
+      </div>
+    </details>
+
+    <details class="entry" data-search="pontaria">
+      <summary>Pontaria</summary>
+      <div class="entry-body">
+        <p>Precisão em ataques à distância, seja com arma de fogo, arco ou qualquer coisa arremessada.</p>
+        
+      </div>
+    </details>
+
+    <details class="entry" data-search="luta">
+      <summary>Luta</summary>
+      <div class="entry-body">
+        <p>Capacidade de combate corpo a corpo, desarmado ou com arma branca.</p>
+        
+      </div>
+    </details>
+
+    <details class="entry" data-search="política">
+      <summary>Política</summary>
+      <div class="entry-body">
+        <p>Conhecimento sobre o cenário de poder atual: quem manda, como chegou lá, e como as engrenagens da política funcionam por trás das aparências.</p>
+        
+      </div>
+    </details>
+
+    <details class="entry" data-search="medicina">
+      <summary>Medicina</summary>
+      <div class="entry-body">
+        <p>Conhecimento pra tratar ferimentos, doenças e envenenamentos, tanto em si mesmo quanto em outras pessoas.</p>
+        
+      </div>
+    </details>
+
+    <details class="entry" data-search="ciências">
+      <summary>Ciências</summary>
+      <div class="entry-body">
+        <p>Conhecimento técnico aplicado, como química, mecânica e engenharia. Usada pra criar, entender ou desmontar invenções, compostos e mecanismos.</p>
+        
+      </div>
+    </details>
+
+    <details class="entry" data-search="investigação">
+      <summary>Investigação</summary>
+      <div class="entry-body">
+        <p>Capacidade de examinar uma cena e reunir pistas concretas. Diferente de Intuição, aqui o personagem descobre o motivo real por trás de algo estranho, não só percebe que existe algo errado.</p>
+        
+      </div>
+    </details>
+
+    <details class="entry" data-search="tática">
+      <summary>Tática</summary>
+      <div class="entry-body">
+        <p>Formação militar aplicada ao campo de batalha. Permite identificar vantagens táticas como cobertura, camuflagem ou terreno elevado antes ou durante um confronto.</p>
+        
+      </div>
+    </details>
+
+    <details class="entry" data-search="religião">
+      <summary>Religião</summary>
+      <div class="entry-body">
+        <p>Conhecimento teológico e cultural sobre as diferentes religiões e crenças do mundo, incluindo rituais, hierarquias e simbologia religiosa.</p>
+        
+      </div>
+    </details>
+
+    <details class="entry" data-search="percepção">
+      <summary>Percepção</summary>
+      <div class="entry-body">
+        <p>Atenção aos detalhes através dos sentidos. Notar um som fora do lugar, um cheiro estranho, um movimento no canto do olho.</p>
+        
+      </div>
+    </details>
+
+    <details class="entry" data-search="enganação">
+      <summary>Enganação</summary>
+      <div class="entry-body">
+        <p>Capacidade de manipular pessoas através de mentiras, blefes ou meias-verdades convincentes.</p>
+        
+      </div>
+    </details>
+
+    <details class="entry" data-search="intuição">
+      <summary>Intuição</summary>
+      <div class="entry-body">
+        <p>Sensibilidade emocional e sexto sentido. Permite perceber quando alguém está mentindo ou sentir que algo está fora do normal numa situação, sem necessariamente saber o motivo exato.</p>
+        
+      </div>
+    </details>
+
+    <details class="entry" data-search="intimidação">
+      <summary>Intimidação</summary>
+      <div class="entry-body">
+        <p>Capacidade de assustar ou coagir alguém pela ameaça, presença física ou tom de voz. Todo uso de Intimidação conta como um efeito de medo.</p>
+        
+      </div>
+    </details>
+
+    <details class="entry" data-search="ocultismo">
+      <summary>Ocultismo</summary>
+      <div class="entry-body">
+        <p>Conhecimento proibido sobre símbolos, rituais, magias e locais marcados por influência sobrenatural. Restrita a bruxos, feiticeiros, caçadores de vampiros e vampiros.</p>
+        
+      </div>
+    </details></div>
+</section>
+<section class="chapter" id="pericias-especiais">
+  <header class="chapter-head">
+    <span class="chapter-num">VIII</span>
+    <h2>Perícias Especiais</h2>
+  </header>
+  <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
+
+  <p>Ritualismo, Alquimia, Forja, Culinária e Fé não são compradas com pontos na criação. Funcionam como um sistema de permissão, não de bônus: o grau representa o que o personagem é realmente capaz de fazer. Sem nenhum grau, o personagem não sabe fazer aquilo. Pode tentar, mas o risco de um resultado desastroso é alto.</p>
+  <p>Cada perícia especial tem 10 graus: 1 é o básico, 10 é a maestria completa. O progresso é adquirido ao longo do RP, em cenas em que o personagem pratica ou demonstra a habilidade; conceder um grau novo é decisão do mestre. Um personagem com histórico ligado a uma dessas áreas pode começar já com grau inicial, conforme sua classe.</p>
+  <div class="entry-grid two">
+    <details class="entry" data-search="ritualismo">
+      <summary>Ritualismo</summary>
+      <div class="entry-body">
+        <p>Conhecimento prático pra executar rituais místicos ou religiosos: preparar círculos de proteção, cerimônias, bênçãos e rituais de banimento. Diferente de Ocultismo, que é o conhecimento teórico sobre o sobrenatural, Ritualismo é saber executar o ritual em si.</p>
+        
+      </div>
+    </details>
+
+    <details class="entry" data-search="alquimia">
+      <summary>Alquimia</summary>
+      <div class="entry-body">
+        <p>Capacidade de criar poções, venenos, elixires e compostos químicos a partir de ervas, minerais e reagentes. Permite desenvolver toxinas, antídotos e substâncias com efeitos especiais, como as usadas contra vampiros.</p>
+        
+      </div>
+    </details>
+
+    <details class="entry" data-search="forja">
+      <summary>Forja</summary>
+      <div class="entry-body">
+        <p>Habilidade de fabricar, reparar e aprimorar armas, armaduras e equipamentos. Com tempo e material adequado, permite criar itens únicos com propriedades especiais, como armas de prata forjadas sob medida.</p>
+        
+      </div>
+    </details>
+
+    <details class="entry" data-search="culinária">
+      <summary>Culinária</summary>
+      <div class="entry-body">
+        <p>Conhecimento de preparo de alimentos e bebidas. Pode ser usada pra preparar refeições que restauram vigor, disfarçar sabores estranhos (como venenos) ou identificar ingredientes suspeitos numa comida.</p>
+        
+      </div>
+    </details>
+
+    <details class="entry" data-search="fé">
+      <summary>Fé</summary>
+      <div class="entry-body">
+        <p>Devoção genuína, não apenas conhecimento teológico. Permite resistir a efeitos de corrupção e medo sobrenatural, potencializar o efeito de água benta e símbolos sagrados, e realizar pequenos milagres de proteção em momentos de crise. Só funciona de verdade se a fé do personagem for sincera, não decorativa.</p>
+        
+      </div>
+    </details></div>
+</section>
+<section class="chapter" id="disciplinas">
+  <header class="chapter-head">
+    <span class="chapter-num">IX</span>
+    <h2>Disciplinas</h2>
+  </header>
+  <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
+
+  <p>Poderes sobrenaturais exclusivos de vampiros, o equivalente a uma característica genética da condição vampírica. Uma Disciplina não é testada sozinha: não existe "teste de Disciplina". Ela é uma capacidade nata, sempre presente, que faz duas coisas: destrava o que o vampiro consegue fazer (Grau 0 = não tem o poder) e dá bônus nos testes ligados a ela: +1 por grau, mais vantagem (rola dois dados e fica com o melhor).</p>
+  <p>Na criação da ficha, o vampiro recebe <b>4 pontos</b> para distribuir entre as Disciplinas (1 ponto = 1 grau). O grau máximo permitido na criação é <b>3</b>. Os graus 4 e 5 só são conquistados depois, durante o jogo.</p>
+  <div class="entry-grid one">
+    <details class="entry" data-search="potência">
+      <summary>Potência</summary>
+      <div class="entry-body">
+        <p>Força sobrenatural bruta.</p>
+        <ol class="grau-list">
+          <li><b>Grau 1:</b> dobra a força em testes físicos.</li>
+<li><b>Grau 2:</b> amassa metal fino, arromba mobília e portas de madeira sem esforço.</li>
+<li><b>Grau 3:</b> golpes desarmados causam dano muito maior.</li>
+<li><b>Grau 4:</b> arremessa objetos pesados ou pessoas a curta distância, danifica estruturas de metal.</li>
+<li><b>Grau 5:</b> arranca portas, vira carruagens, quebra correntes.</li>
+        </ol>
+      </div>
+    </details>
+
+    <details class="entry" data-search="celeridade">
+      <summary>Celeridade</summary>
+      <div class="entry-body">
+        <p>Velocidade sobrenatural.</p>
+        <ol class="grau-list">
+          <li><b>Grau 1:</b> reage antes de qualquer humano numa cena, vantagem em iniciativa.</li>
+<li><b>Grau 2:</b> pico curto de velocidade, cruza uma sala em um instante.</li>
+<li><b>Grau 3:</b> cobre distâncias absurdas em frações de segundo.</li>
+<li><b>Grau 4:</b> reage a mais de um ataque no mesmo turno.</li>
+<li><b>Grau 5:</b> quase impossível de acertar em combate corpo a corpo sem alguma vantagem especial.</li>
+        </ol>
+      </div>
+    </details>
+
+    <details class="entry" data-search="ofuscação">
+      <summary>Ofuscação</summary>
+      <div class="entry-body">
+        <p>Passar despercebido além da furtividade normal.</p>
+        <ol class="grau-list">
+          <li><b>Grau 1:</b> pessoas comuns não notam sua presença enquanto parado ou em silêncio.</li>
+<li><b>Grau 2:</b> anda sem ser notado por quem estiver distraído.</li>
+<li><b>Grau 3:</b> se move sem ser notado mesmo à vista, se ninguém estiver com atenção direta nele.</li>
+<li><b>Grau 4:</b> se esconde mesmo sob atenção direta breve, se o olhar desviar por um instante.</li>
+<li><b>Grau 5:</b> some completamente de vista assim que quebra o contato visual, mesmo tendo sido observado antes.</li>
+        </ol>
+      </div>
+    </details>
+
+    <details class="entry" data-search="presença">
+      <summary>Presença</summary>
+      <div class="entry-body">
+        <p>Domínio sobre a atenção e a emoção alheia.</p>
+        <ol class="grau-list">
+          <li><b>Grau 1:</b> vantagem em Enganação e Intimidação.</li>
+<li><b>Grau 2:</b> atrai a atenção de um ambiente inteiro à vontade.</li>
+<li><b>Grau 3:</b> inspira medo ou fascínio instantâneo num grupo pequeno.</li>
+<li><b>Grau 4:</b> sustenta o efeito por mais tempo ou afeta um grupo maior.</li>
+<li><b>Grau 5:</b> paralisa alguém só de existir perto da pessoa.</li>
+        </ol>
+      </div>
+    </details>
+
+    <details class="entry" data-search="domínio">
+      <summary>Domínio</summary>
+      <div class="entry-body">
+        <p>Controle mental direto; exige contato visual e que a vítima entenda o comando dado.</p>
+        <ol class="grau-list">
+          <li><b>Grau 1:</b> sugestões simples e curtas.</li>
+<li><b>Grau 2:</b> comandos um pouco mais elaborados, efeito de curta duração.</li>
+<li><b>Grau 3:</b> comandos mais elaborados, altera lembranças recentes.</li>
+<li><b>Grau 4:</b> implanta compulsão que persiste sem contato visual contínuo.</li>
+<li><b>Grau 5:</b> controle total e temporário sobre a vontade de alguém.</li>
+        </ol>
+      </div>
+    </details>
+
+    <details class="entry" data-search="vidência">
+      <summary>Vidência</summary>
+      <div class="entry-body">
+        <p>Sentidos aguçados além do humano.</p>
+        <ol class="grau-list">
+          <li><b>Grau 1:</b> enxerga no escuro, ouve batimentos cardíacos, percebe mentiras óbvias.</li>
+<li><b>Grau 2:</b> sente presença de seres sobrenaturais próximos, rastreia por cheiro.</li>
+<li><b>Grau 3:</b> lê emoções superficiais e memórias recentes por toque.</li>
+<li><b>Grau 4:</b> sente coisas a maior distância, lampejos de premonição.</li>
+<li><b>Grau 5:</b> telepatia limitada, visões de eventos à distância.</li>
+        </ol>
+      </div>
+    </details>
+
+    <details class="entry" data-search="proteísmo">
+      <summary>Proteísmo</summary>
+      <div class="entry-body">
+        <p>Transformação corporal.</p>
+        <ol class="grau-list">
+          <li><b>Grau 1:</b> olhos brilham no escuro, garras retráteis.</li>
+<li><b>Grau 2:</b> alonga membros e afia dentes, transformação parcial.</li>
+<li><b>Grau 3:</b> assume forma de morcego, lobo ou névoa por um tempo.</li>
+<li><b>Grau 4:</b> sustenta a forma por mais tempo, ou mescla traços de mais de uma forma.</li>
+<li><b>Grau 5:</b> dissolve o próprio corpo em névoa pra escapar de qualquer prisão física.</li>
+        </ol>
+      </div>
+    </details>
+
+    <details class="entry" data-search="hemomancia">
+      <summary>Hemomancia</summary>
+      <div class="entry-body">
+        <p>Magia do próprio sangue vampírico; libera acesso à magia do tipo Vampírica.</p>
+        <ol class="grau-list">
+          <li><b>Grau 1:</b> molda o próprio sangue em efeitos simples (endurecer uma gota, selar um corte pequeno).</li>
+<li><b>Grau 2:</b> projeta o sangue a curta distância, formando um chicote ou fio cortante temporário.</li>
+<li><b>Grau 3:</b> cria vínculo temporário com outra pessoa via sangue, sentindo emoções fortes dela à distância.</li>
+<li><b>Grau 4:</b> manipula o sangue de outra criatura ainda dentro do corpo dela.</li>
+<li><b>Grau 5:</b> molda grandes quantidades de sangue em armas, armaduras ou forma auxiliar temporária.</li>
+        </ol>
+      </div>
+    </details>
+
+    <details class="entry" data-search="sanguessugia">
+      <summary>Sanguessugia</summary>
+      <div class="entry-body">
+        <p>Talento voltado ao ato de se alimentar.</p>
+        <ol class="grau-list">
+          <li><b>Grau 1:</b> alimenta-se de forma limpa e eficiente, sem levantar suspeita fácil.</li>
+<li><b>Grau 2:</b> recupera uma pequena quantidade de Vida ao se alimentar de uma vítima viva.</li>
+<li><b>Grau 3:</b> capta fragmentos de memória ou conhecimento da vítima durante a mordida.</li>
+<li><b>Grau 4:</b> rouba temporariamente parte da capacidade física da vítima.</li>
+<li><b>Grau 5:</b> uma única alimentação pode curar quase por completo ou conceder um pico de poder, mas a vítima fica extremamente debilitada.</li>
+        </ol>
+      </div>
+    </details>
+
+    <details class="entry" data-search="regeneração">
+      <summary>Regeneração</summary>
+      <div class="entry-body">
+        <p>Cura acelerada e resistência do corpo vampírico.</p>
+        <ol class="grau-list">
+          <li><b>Grau 1:</b> fecha cortes pequenos e feridas superficiais em poucos instantes.</li>
+<li><b>Grau 2:</b> recupera uma quantidade pequena de Vida a cada cena, sem ação especial.</li>
+<li><b>Grau 3:</b> regenera feridas graves em minutos, incluindo ossos quebrados.</li>
+<li><b>Grau 4:</b> regenera mesmo sob efeito que normalmente impede a cura vampírica, se o dano não for sagrado/prata.</li>
+<li><b>Grau 5:</b> reconstrói partes do corpo perdidas dado tempo suficiente.</li>
+        </ol>
+      </div>
+    </details></div>
+</section>
+<section class="chapter" id="magia">
+  <header class="chapter-head">
+    <span class="chapter-num">X</span>
+    <h2>Sistema de Magia</h2>
+  </header>
+  <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
+
+  <p>Toda magia é montada a partir de 4 componentes, cada um somando ao custo de Mana e à Dificuldade do teste: <b>Efeito</b> (o que ela faz), <b>Alcance</b> (toque, curta ou longa distância), <b>Duração</b> (instantânea, cena ou sessão) e <b>Alvo</b> (um alvo, área pequena ou área grande).</p>
+  <p class="formula">Teste de Conjuração = 1d20 + Atributo (Alma ou Vontade) + Perícia (Ocultismo, Ritualismo ou Fé)</p>
+  <p>Contra a Dificuldade da magia. Falhar ainda gasta a Mana; tirar 1 natural pode fazer a magia sair do controle.</p>
+
+  <h3>Raridade da Magia</h3>
+  <p>Rolada em 1d100 na criação, ou ao aprender/criar uma magia nova. Quanto maior o Rank, mais Mana a magia gasta e mais forte é o efeito.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Rank</th><th>Resultado no 1d100</th><th>Chance</th></tr></thead>
+    <tbody><tr data-search="comum"><td data-label="Rank">Comum</td><td data-label="Resultado no 1d100">1–45</td><td data-label="Chance">45%</td></tr>
+<tr data-search="raro"><td data-label="Rank">Raro</td><td data-label="Resultado no 1d100">46–75</td><td data-label="Chance">30%</td></tr>
+<tr data-search="super raro"><td data-label="Rank">Super Raro</td><td data-label="Resultado no 1d100">76–95</td><td data-label="Chance">20%</td></tr>
+<tr data-search="lendário"><td data-label="Rank">Lendário</td><td data-label="Resultado no 1d100">96–99</td><td data-label="Chance">4%</td></tr>
+<tr data-search="mítico"><td data-label="Rank">Mítico</td><td data-label="Resultado no 1d100">100</td><td data-label="Chance">1%</td></tr></tbody>
+  </table></div>
+
+  <h3>Tipos de Magia</h3>
+  <div class="entry-grid one">
+    <details class="entry" data-search="divina">
+      <summary>Divina</summary>
+      <div class="entry-body">
+        <p>Concedida por uma força celestial ou sagrada. Exclusiva de clero e nobreza com Fé suficiente para desbloquear o acesso. Não pode ser criada por conta própria a menos que o personagem faça parte do clero; só pode ser ensinada. O Rank dela acompanha o Rank da perícia especial Fé.</p>
+        
+      </div>
+    </details>
+
+    <details class="entry" data-search="demoníaca">
+      <summary>Demoníaca</summary>
+      <div class="entry-body">
+        <p>Vem de pactos com demônios ou fontes infernais. Não é escolhida na criação, só é conseguida durante o RP. Junto com a Divina, é um dos dois tipos mais fortes do sistema; ambas têm uma fraqueza natural uma contra a outra, que fica em aberto de propósito e é descoberta ao longo do RP.</p>
+        
+      </div>
+    </details>
+
+    <details class="entry" data-search="elemental">
+      <summary>Elemental</summary>
+      <div class="entry-body">
+        <p>Controle sobre fogo, água, terra, ar e afins. Um dos dois tipos básicos, disponível a qualquer feiticeiro.</p>
+        
+      </div>
+    </details>
+
+    <details class="entry" data-search="vampírica">
+      <summary>Vampírica</summary>
+      <div class="entry-body">
+        <p>Poder ligado à condição vampírica. Liberada pela Disciplina Hemomancia.</p>
+        
+      </div>
+    </details>
+
+    <details class="entry" data-search="arcana">
+      <summary>Arcana</summary>
+      <div class="entry-body">
+        <p>Magia bruta, estudada e teórica, sem origem divina ou demoníaca. Um dos dois tipos básicos, disponível a qualquer feiticeiro.</p>
+        
+      </div>
+    </details>
+
+    <details class="entry" data-search="necromancia">
+      <summary>Necromancia</summary>
+      <div class="entry-body">
+        <p>Domínio sobre a morte: reanimar mortos, comandar esqueletos, falar com espíritos. Não pode ser escolhida livremente, só é desbloqueada por uma classe secreta (Necromante), conquistada via progressão no RP.</p>
+        
+      </div>
+    </details>
+
+    <details class="entry" data-search="anímica">
+      <summary>Anímica</summary>
+      <div class="entry-body">
+        <p>Magia da alma: prender, drenar, transferir ou proteger almas. Vem dos feiticeiros e também dos vampiros. Mais difícil de aprender e mais diversificada que as outras. Magias novas criadas nesse tipo passam por análise rígida do mestre e, na maioria das vezes, são recusadas.</p>
+        
+      </div>
+    </details></div>
+
+  <h3>Como Conseguir Magias Novas</h3>
+  <p><b>Aprendendo</b>: precisa de um mentor com Rank 5 ou mais em Ritualismo, disposto a ensinar.</p>
+  <p><b>Criando sozinho</b>: a quantidade de magias que o personagem consegue criar por conta própria é igual ao seu Rank em Ritualismo (Rank 1 = 1 magia, Rank 2 = 2, e assim por diante).</p>
+  <p>Só é possível aprender ou criar magias do tipo relacionado à classe do personagem. Toda magia nova, aprendida ou criada, precisa passar pela aprovação do mestre antes de valer em jogo. Uma mesma magia pode ter mais de um tipo de uso, dependendo de como é conjurada.</p>
+
+  <h3>Custo de Mana</h3>
+  <p>O custo de Mana de cada magia é definido pelo mestre, variando conforme o tipo e o efeito dela, independente do Rank de raridade. Qualquer dúvida sobre como criar ou custear uma magia deve ser tirada diretamente com um mestre.</p>
+  <h3>Constructos (Magias de Efeito Contínuo)</h3>
+  <p>Um constructo é qualquer magia do tipo Efeito Contínuo, ou seja, que dura mais de um turno. Um personagem só consegue manter, ao mesmo tempo, uma quantidade de constructos ativos igual à soma de Razão + Alma.</p>
+</section>
+<section class="chapter" id="combate">
+  <header class="chapter-head">
+    <span class="chapter-num">XI</span>
+    <h2>Combate</h2>
+  </header>
+  <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
+
+  <p class="formula">Defesa = 10 + Destreza <span>(pode subir com equipamento)</span></p>
+  <p>Também chamada de CA (Classe de Armadura): é o número mínimo que um ataque precisa alcançar pra acertar o alvo.</p>
+  <p class="formula">Iniciativa = 1d20 + Destreza</p>
+  <h3>Ações no Turno</h3>
+  <p>Em cada turno, o personagem tem três ações disponíveis:</p>
+  <p><b>Ação de Movimento</b>: usada pra se deslocar em cena. Também serve pra recarregar uma arma de fogo, se levantar depois de cair, ou qualquer ação rápida equivalente.</p>
+  <p><b>Ação Padrão</b>: usada pra atacar ou conjurar uma magia.</p>
+  <p><b>Ação de Reação</b>: usada pra reagir a um ataque (Defesa, Bloqueio, Esquiva ou Contra-Ataque). Só uma por turno, como já descrito abaixo.</p>
+  <h3>Teste de Acerto</h3>
+  <p>Feito sempre que há necessidade de acertar um golpe, disparo ou qualquer ação que peça precisão. Teste = 1d20 + Perícia (Luta para corpo a corpo, Pontaria para à distância), contra a Defesa do alvo.</p>
+  <h3>Reações ao Ser Atacado</h3>
+  <p>Ao ser atacado, o personagem pode escolher uma entre quatro reações. Cada personagem só tem uma reação por turno, então só pode escolher uma delas uma vez; se mais de uma criatura atacar no mesmo turno, ele não consegue reagir aos ataques seguintes, a menos que tenha uma habilidade ou item que conceda reações extras.</p>
+  <p><b>Defesa</b>: você golpeia de volta. O dano que causaria no oponente reduz o dano que você recebe do ataque dele. Em ataques em área, cada personagem atingido se defende sozinho, sem somar reduções em grupo.</p>
+  <p><b>Bloqueio</b>: você tenta anular o ataque por completo, rolando contra o resultado do teste de acerto do oponente. Se falhar, o ataque acerta em cheio e causa o dobro do dano total.</p>
+  <p><b>Esquiva</b>: usada pra evitar quase por completo um ataque corpo a corpo ou à distância, testando a Destreza do defensor contra a do atacante. Não pode ser usada contra ataques em área, a menos que o personagem tenha uma habilidade própria pra esquivas desse tipo.</p>
+  <p><b>Contra-Ataque</b>: você recebe o dano cheio do golpe do oponente, mas em troca acerta automaticamente, sem precisar rolar, havendo uma troca de golpes no processo. Só pode ser usado em confrontos corpo a corpo.</p>
+  <p class="tag">Esboço, ainda pode receber ajustes</p>
+  <h3>Erro Crítico</h3>
+  <p>Ao tirar 1 natural num teste de combate, o resultado ruim de verdade: role 1d5 pra saber o que acontece.</p>
+  <ul class="open-list">
+    <li>1: erra completamente, sem efeito adicional.</li>
+    <li>2: acerta um aliado por engano.</li>
+    <li>3: quebra a própria arma.</li>
+    <li>4: cai no chão.</li>
+    <li>5: fica desequilibrado e perde a próxima reação disponível.</li>
+  </ul>
+  <h3>Dano de Arma</h3>
+  <p>Dano fixo, dado mais atributo. Armas de uma mão mais pesadas e as de duas mãos usam Força; armas rápidas e de precisão usam Destreza. Armas de fogo não somam atributo nenhum no dano, quem faz o trabalho ali é a pólvora, a Destreza só entra no teste de acerto.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Arma</th><th>Categoria</th><th>Dano</th><th>Tipo</th></tr></thead>
+    <tbody><tr data-search="desarmado (soco, chute, mordida)"><td data-label="Arma">Desarmado (soco, chute, mordida)</td><td data-label="Categoria">Desarmado</td><td data-label="Dano">1d4 + Força</td><td data-label="Tipo">Impacto</td></tr>
+<tr data-search="adaga"><td data-label="Arma">Adaga</td><td data-label="Categoria">Leve</td><td data-label="Dano">1d6 + Destreza</td><td data-label="Tipo">Perfurante</td></tr>
+<tr data-search="faca"><td data-label="Arma">Faca</td><td data-label="Categoria">Leve</td><td data-label="Dano">1d6 + Destreza</td><td data-label="Tipo">Cortante</td></tr>
+<tr data-search="florete"><td data-label="Arma">Florete</td><td data-label="Categoria">Leve</td><td data-label="Dano">1d6 + Destreza</td><td data-label="Tipo">Perfurante</td></tr>
+<tr data-search="chicote"><td data-label="Arma">Chicote</td><td data-label="Categoria">Leve</td><td data-label="Dano">1d6 + Destreza</td><td data-label="Tipo">Cortante</td></tr>
+<tr data-search="espada"><td data-label="Arma">Espada</td><td data-label="Categoria">Média</td><td data-label="Dano">1d10 + Força</td><td data-label="Tipo">Cortante</td></tr>
+<tr data-search="sabre"><td data-label="Arma">Sabre</td><td data-label="Categoria">Média</td><td data-label="Dano">1d10 + Força</td><td data-label="Tipo">Cortante</td></tr>
+<tr data-search="machado de mão"><td data-label="Arma">Machado de mão</td><td data-label="Categoria">Média</td><td data-label="Dano">1d10 + Força</td><td data-label="Tipo">Cortante</td></tr>
+<tr data-search="maça"><td data-label="Arma">Maça</td><td data-label="Categoria">Média</td><td data-label="Dano">1d10 + Força</td><td data-label="Tipo">Impacto</td></tr>
+<tr data-search="besta de mão"><td data-label="Arma">Besta de mão</td><td data-label="Categoria">Média</td><td data-label="Dano">1d10 + Destreza</td><td data-label="Tipo">Perfurante</td></tr>
+<tr data-search="machado de guerra"><td data-label="Arma">Machado de guerra</td><td data-label="Categoria">Pesada, duas mãos</td><td data-label="Dano">1d12 + Força</td><td data-label="Tipo">Cortante</td></tr>
+<tr data-search="malho"><td data-label="Arma">Malho</td><td data-label="Categoria">Pesada, duas mãos</td><td data-label="Dano">1d12 + Força</td><td data-label="Tipo">Impacto</td></tr>
+<tr data-search="alabarda / lança longa"><td data-label="Arma">Alabarda / lança longa</td><td data-label="Categoria">Pesada, duas mãos</td><td data-label="Dano">1d12 + Força</td><td data-label="Tipo">Perfurante</td></tr>
+<tr data-search="montante"><td data-label="Arma">Montante</td><td data-label="Categoria">Pesada, duas mãos</td><td data-label="Dano">1d12 + Força</td><td data-label="Tipo">Cortante</td></tr>
+<tr data-search="pistola"><td data-label="Arma">Pistola</td><td data-label="Categoria">Arma de Fogo</td><td data-label="Dano">2d6, sem atributo, precisa recarregar</td><td data-label="Tipo">Perfurante</td></tr>
+<tr data-search="mosquete"><td data-label="Arma">Mosquete</td><td data-label="Categoria">Arma de Fogo, duas mãos</td><td data-label="Dano">2d8, sem atributo, precisa recarregar</td><td data-label="Tipo">Perfurante</td></tr></tbody>
+  </table></div>
+  <p>Prata continua dobrando o dano total contra vampiros e demônios, independente da arma usada.</p>
+  <h3>HP Zerado</h3>
+  <p>Quando o HP chega a 0, o personagem tem 3 turnos para ser estabilizado por alguém antes de morrer. A Dificuldade do teste de estabilização sobe a cada turno: 15 no primeiro, 20 no segundo, 25 no terceiro. Se o personagem for reestabilizado e cair a 0 de novo no mesmo combate, o ciclo reinicia com Dificuldade mais alta: 30, depois 35, subindo a cada novo ciclo.</p>
+</section>
+<section class="chapter" id="inventario">
+  <header class="chapter-head">
+    <span class="chapter-num">XII</span>
+    <h2>Inventário</h2>
+  </header>
+  <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
+
+  <p><b>Inventário de Residência</b>: sem limite prático de itens, guarda tudo que não está sendo carregado.</p>
+  <p class="formula">Inventário de Bolso = 2 + Força + Vitalidade</p>
+  <p>O que o personagem carrega consigo, sem peso ou tamanho por item, só contagem.</p>
+</section>
+<section class="chapter" id="raca-vampiro">
+  <header class="chapter-head">
+    <span class="chapter-num">XIII</span>
+    <h2>Raça Vampiro</h2>
+  </header>
+  <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
+
+  <p>Limites de atributo: Força, Destreza e Vitalidade até 5 (contra 3 do humano). Razão, Vontade e Alma seguem sem limite definido.</p>
+  <h3>Fraquezas</h3>
+  <p><b>Sol</b>: exposição direta causa dificuldades crescentes. Sugestão de escala: 1º turno exposto, −2 em todos os testes, sem dano ainda; 2º turno, 1d6 de dano, −4 nos testes, Disciplinas bloqueadas; 3º turno em diante, 2d6 de dano por turno, −6 nos testes, risco real de morte.</p>
+  <p><b>Prata</b>: causa dano dobrado em vampiros, mesma regra vale para demônios. Também bloqueia a Regeneração enquanto o ferimento não for tratado.</p>
+  <p><b>Estaca</b>: perfurar o coração de um vampiro é um golpe difícil de acertar (DT alta, a definir junto do sistema de dano de arma). Se acertar, causa paralisia instantânea. Se a estaca não for removida, o vampiro entra em risco de morte definitiva, mesma lógica do HP zerado, sem poder usar Regeneração enquanto ela estiver enfiada.</p>
+  <p><b>Decapitação</b>: mata de forma definitiva, sem chance de Regeneração mesmo em Grau 5. É basicamente a única forma totalmente garantida de matar um vampiro para sempre.</p>
+  <p><b>Água Sagrada</b>: em vampiros, causa um efeito de envenenamento cuja intensidade depende da quantidade usada. O tipo de efeito e o dano exatos são definidos pelo mestre ou pelos próprios players durante o RP.</p>
+  <p><b>Armas Sagradas</b>: crucifixos e outras armas abençoadas causam triplo de dano em demônios.</p>
+</section>
+<section class="chapter" id="classes">
+  <header class="chapter-head">
+    <span class="chapter-num">XIV</span>
+    <h2>Classes</h2>
+  </header>
+  <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
+
+  <div class="class-grid">
+    <article class="class-card" data-search="caçador">
+      <h3>Caçador</h3>
+      <p class="class-desc">Os caçadores devotam suas vidas ao extermínio das trevas, buscando, de um jeito ou de outro, purificar o mundo do inferno e dos servos que por ele vagam. Vivem entre a fé e a violência, treinados pra reconhecer e abater o que a maioria prefere fingir que não existe.</p>
+      <dl class="class-stats">
+        <div><dt>Vida</dt><dd>35</dd></div>
+        <div><dt>Sanidade</dt><dd>15</dd></div>
+        <div><dt>Mana</dt><dd>5</dd></div>
+        <div><dt>Estamina</dt><dd>20</dd></div>
+      </dl>
+      <p class="class-vant">Vantagem nas Perícias: Religião e Luta ou Pontaria</p>
+    </article>
+
+    <article class="class-card" data-search="feiticeiros">
+      <h3>Feiticeiros</h3>
+      <p class="class-desc">Estudiosos do proibido, buscam nas páginas antigas e nos rituais esquecidos um poder que a maioria teme sequer nomear. Cada segredo aprendido cobra um preço, e nem todo feiticeiro percebe o quanto já pagou até ser tarde demais.</p>
+      <dl class="class-stats">
+        <div><dt>Vida</dt><dd>20</dd></div>
+        <div><dt>Sanidade</dt><dd>20</dd></div>
+        <div><dt>Mana</dt><dd>25</dd></div>
+        <div><dt>Estamina</dt><dd>5</dd></div>
+      </dl>
+      <p class="class-vant">Vantagem nas Perícias: Investigação e Ocultismo</p>
+    </article>
+
+    <article class="class-card" data-search="ladrão">
+      <h3>Ladrão</h3>
+      <p class="class-desc">Sobrevive pela lâmina afiada da língua e pela sombra que nunca o larga. Não busca glória nem verdade. Busca o próximo passo, a próxima porta trancada, a próxima chance de sumir antes que alguém perceba que ele esteve ali.</p>
+      <dl class="class-stats">
+        <div><dt>Vida</dt><dd>25</dd></div>
+        <div><dt>Sanidade</dt><dd>20</dd></div>
+        <div><dt>Mana</dt><dd>10</dd></div>
+        <div><dt>Estamina</dt><dd>15</dd></div>
+      </dl>
+      <p class="class-vant">Vantagem nas Perícias: Furtividade e Enganação</p>
+    </article>
+
+    <article class="class-card" data-search="mestre de forja">
+      <h3>Mestre de Forja</h3>
+      <p class="class-desc">Funde o conhecimento das mãos com o conhecimento proibido: entende que uma lâmina comum não fere o que espreita na escuridão, e dedica a vida a forjar o que realmente pode. Cada peça que sai da sua bigorna carrega um propósito.</p>
+      <dl class="class-stats">
+        <div><dt>Vida</dt><dd>15</dd></div>
+        <div><dt>Sanidade</dt><dd>35</dd></div>
+        <div><dt>Mana</dt><dd>15</dd></div>
+        <div><dt>Estamina</dt><dd>20</dd></div>
+      </dl>
+      <p class="class-vant">Vantagem nas Perícias: Ocultismo e Tática</p>
+    </article>
+
+    <article class="class-card" data-search="mundano">
+      <h3>Mundano</h3>
+      <p class="class-desc">Você vive um dia de cada vez, cuidando dos seus afazeres cotidianos e se preocupando, no máximo, com o que vai comer no almoço. Sua vida segue sem muitas preocupações, até que as trevas decidam o contrário.</p>
+      <dl class="class-stats">
+        <div><dt>Vida</dt><dd>10</dd></div>
+        <div><dt>Sanidade</dt><dd>15</dd></div>
+        <div><dt>Mana</dt><dd>10</dd></div>
+        <div><dt>Estamina</dt><dd>10</dd></div>
+      </dl>
+      <p class="class-vant">Vantagem nas Perícias: duas à sua escolha</p>
+    </article>
+
+    <article class="class-card" data-search="sábio">
+      <h3>Sábio</h3>
+      <p class="class-desc">Os sábios buscam o saber que liberta da fome, do medo e da ignorância. Mas, neste mundo de trevas, quem seria capaz de encontrá-lo? Preferem a biblioteca ao campo de batalha, mas o que aprendem muitas vezes os arrasta pra lá de qualquer jeito.</p>
+      <dl class="class-stats">
+        <div><dt>Vida</dt><dd>15</dd></div>
+        <div><dt>Sanidade</dt><dd>35</dd></div>
+        <div><dt>Mana</dt><dd>20</dd></div>
+        <div><dt>Estamina</dt><dd>5</dd></div>
+      </dl>
+      <p class="class-vant">Vantagem nas Perícias: Ciências e Investigação</p>
+    </article></div>
+</section>
+<section class="chapter" id="habilidades-iniciais">
+  <header class="chapter-head">
+    <span class="chapter-num">XV</span>
+    <h2>Habilidades Iniciais</h2>
+  </header>
+  <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
+
+  <p>Todo personagem começa com duas habilidades: uma criada pelo próprio jogador, e outra da classe.</p>
+  <div class="entry-grid one">
+    <details class="entry">
+      <summary>Habilidade Própria</summary>
+      <div class="entry-body">
+        <p>Sem regra fixa de custo, tipo (ativa ou passiva) ou balanceamento. O jogador manda o rascunho pro mestre, que ajusta o que for preciso até ficar equilibrado. O foco do jogador deve ser a criatividade: a habilidade precisa representar o personagem e as capacidades que ele quer ter além de um humano ou vampiro comum.</p>
+      </div>
+    </details>
+    <details class="entry">
+      <summary>Habilidade de Classe</summary>
+      <div class="entry-body">
+        <p>Predefinida pela própria classe. Quando a classe oferecer mais de uma opção, o jogador escolhe qual das duas leva.</p>
+      </div>
+    </details>
+    <details class="entry">
+      <summary>Magia Inicial</summary>
+      <div class="entry-body">
+        <p>Exclusiva de classes mágicas. O personagem recebe uma magia inicial já na criação, com o Rank sorteado em 1d100 (ver capítulo Sistema de Magia).</p>
+      </div>
+    </details>
+  </div>
+</section>
+<section class="chapter" id="progressao">
+  <header class="chapter-head">
+    <span class="chapter-num">XVI</span>
+    <h2>Progressão de Personagem</h2>
+  </header>
+  <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
+
+  <p>Nível máximo: 10. Subir de nível não segue uma fórmula fixa de pontos ou cenas; é decisão dos mestres, concedida em três situações: RP muito significativo pro personagem e reconhecido pelo grupo como um marco de verdade, missão secundária narrada pelos mestres, ou evento.</p>
+  <p>A cada nível, o personagem ganha 2 pontos de Perícia.</p>
+  <p>A cada 2 níveis, o personagem também ganha 1 ponto de Atributo (5 pontos no total até o nível 10) e escolhe entre criar uma habilidade nova, seguindo a mesma lógica da Habilidade Própria inicial, ou melhorar uma habilidade que já tem.</p>
+  <p>Atributo sobe mais devagar de propósito: a progressão é pensada pra manter os personagens relativamente fracos ao longo do tempo, não pra virarem lendas em poucas sessões.</p>
+  <p>Pontos de Atributo ganhos por nível podem ultrapassar o limite de criação (3 pro humano, 5 pro vampiro). Isso representa o personagem crescendo além do que é natural pra sua raça através da experiência, e não um erro de ficha.</p>
+</section>
+<section class="chapter" id="ferramentas">
+  <header class="chapter-head">
+    <span class="chapter-num">XVII</span>
+    <h2>Ferramentas</h2>
+  </header>
+  <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
+
+  <p>Duas ferramentas rápidas pra usar direto aqui, sem precisar sair do site.</p>
+
+  <div class="tool-box">
+    <h3>Rolador de Dados</h3>
+    <div class="dice-controls">
+      <label>Quantidade<input type="number" id="diceQty" value="1" min="1" max="20"></label>
+      <label>Dado
+        <select id="diceType">
+          <option value="4">d4</option>
+          <option value="6">d6</option>
+          <option value="8">d8</option>
+          <option value="10">d10</option>
+          <option value="12">d12</option>
+          <option value="20" selected>d20</option>
+          <option value="100">d100</option>
+        </select>
+      </label>
+      <label>Modificador<input type="number" id="diceMod" value="0"></label>
+      <button id="rollBtn" type="button">Rolar</button>
+    </div>
+    <div id="diceResult" class="dice-result" aria-live="polite"></div>
+  </div>
+
+  <div class="tool-box">
+    <h3>Calculadora de Recursos</h3>
+    <p class="tool-hint">Preenche os atributos e escolhe a classe pra ver Vida, Sanidade, Mana e Estamina na hora.</p>
+    <div class="calc-grid">
+      <label>Força<input type="number" class="calc-attr" data-attr="forca" value="0"></label>
+      <label>Destreza<input type="number" class="calc-attr" data-attr="destreza" value="0"></label>
+      <label>Vitalidade<input type="number" class="calc-attr" data-attr="vitalidade" value="0"></label>
+      <label>Razão<input type="number" class="calc-attr" data-attr="razao" value="0"></label>
+      <label>Vontade<input type="number" class="calc-attr" data-attr="vontade" value="0"></label>
+      <label>Alma<input type="number" class="calc-attr" data-attr="alma" value="0"></label>
+    </div>
+    <label class="calc-class-label">Classe (bônus)
+      <select id="calcClass">
+        <option value="0,0,0,0">Nenhuma</option>
+        <option value="35,15,5,20">Caçador</option><option value="20,20,25,5">Feiticeiros</option><option value="25,20,10,15">Ladrão</option><option value="15,35,15,20">Mestre de Forja</option><option value="10,15,10,10">Mundano</option><option value="15,35,20,5">Sábio</option>
+      </select>
+    </label>
+    <div id="calcResult" class="calc-result"></div>
+  </div>
+</section>
+<section class="chapter" id="em-aberto">
+  <header class="chapter-head">
+    <span class="chapter-num">XVIII</span>
+    <h2>Em Aberto</h2>
+  </header>
+  <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
+
+  <p>Itens ainda pendentes de definição:</p>
+  <ul class="open-list">
+    <li>Economia e dinheiro</li>
+    <li>Ficha de lore (documento separado)</li>
+    <li>Honra e Reputação (ainda será feito)</li>
+  </ul>
+</section>
+
+      <footer>Documento vivo, sistema ainda em desenvolvimento. Consulte o capítulo "Em Aberto" para o que falta fechar.</footer>
+    </div>
+  </main>
+</div>
+
+<script>
+(function(){
+  var sidebar = document.getElementById('sidebar');
+  var toggle = document.getElementById('navToggle');
+  var backdrop = document.getElementById('navBackdrop');
+
+  function closeNav(){
+    sidebar.classList.remove('is-open');
+    backdrop.classList.remove('is-open');
+    toggle.setAttribute('aria-expanded','false');
+  }
+  function openNav(){
+    sidebar.classList.add('is-open');
+    backdrop.classList.add('is-open');
+    toggle.setAttribute('aria-expanded','true');
+  }
+  toggle.addEventListener('click', function(){
+    sidebar.classList.contains('is-open') ? closeNav() : openNav();
+  });
+  backdrop.addEventListener('click', closeNav);
+  sidebar.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){ if (window.innerWidth < 900) closeNav(); });
+  });
+
+  var links = Array.prototype.slice.call(sidebar.querySelectorAll('a[data-target]'));
+  var sections = links.map(function(a){ return document.getElementById(a.dataset.target); }).filter(Boolean);
+
+  if ('IntersectionObserver' in window){
+    var observer = new IntersectionObserver(function(entriesList){
+      entriesList.forEach(function(entry){
+        var link = sidebar.querySelector('a[data-target="' + entry.target.id + '"]');
+        if (!link) return;
+        if (entry.isIntersecting) {
+          links.forEach(function(l){ l.classList.remove('active'); });
+          link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+    sections.forEach(function(s){ observer.observe(s); });
+  }
+
+  var searchInput = document.getElementById('pageSearch');
+  var searchCount = document.getElementById('searchCount');
+  var searchables = Array.prototype.slice.call(document.querySelectorAll('[data-search]'));
+  if (searchInput) {
+    searchInput.addEventListener('input', function(){
+      var q = searchInput.value.trim().toLowerCase();
+      if (!q) {
+        searchables.forEach(function(el){ el.classList.remove('search-hide'); });
+        searchCount.hidden = true;
+        return;
+      }
+      var matches = 0;
+      searchables.forEach(function(el){
+        var hit = el.getAttribute('data-search').indexOf(q) !== -1;
+        el.classList.toggle('search-hide', !hit);
+        if (hit) {
+          matches += 1;
+          if (el.tagName === 'DETAILS') el.open = true;
+        }
+      });
+      searchCount.hidden = false;
+      searchCount.textContent = matches === 1 ? '1 resultado' : (matches + ' resultados');
+    });
+  }
+
+  var rollBtn = document.getElementById('rollBtn');
+  if (rollBtn) {
+    rollBtn.addEventListener('click', function(){
+      var qty = Math.max(1, Math.min(20, parseInt(document.getElementById('diceQty').value, 10) || 1));
+      var sides = parseInt(document.getElementById('diceType').value, 10);
+      var mod = parseInt(document.getElementById('diceMod').value, 10) || 0;
+      var rolls = [];
+      for (var i = 0; i < qty; i++) { rolls.push(1 + Math.floor(Math.random() * sides)); }
+      var sum = rolls.reduce(function(a, b){ return a + b; }, 0) + mod;
+      var detail = rolls.join(' + ') + (mod > 0 ? ' + ' + mod : (mod < 0 ? ' - ' + Math.abs(mod) : ''));
+      document.getElementById('diceResult').innerHTML =
+        '<span class="dice-total">' + sum + '</span><span class="dice-detail">' + detail + '</span>';
+    });
+  }
+
+  var calcAttrs = Array.prototype.slice.call(document.querySelectorAll('.calc-attr'));
+  var calcClassSel = document.getElementById('calcClass');
+  function updateCalc(){
+    var vals = {};
+    calcAttrs.forEach(function(inp){ vals[inp.dataset.attr] = parseInt(inp.value, 10) || 0; });
+    var bonus = (calcClassSel.value || '0,0,0,0').split(',').map(Number);
+    var vida = vals.vitalidade * 5 + bonus[0];
+    var sanidade = vals.vontade * 5 + bonus[1];
+    var mana = (vals.alma + vals.vontade) * 3 + bonus[2];
+    var estamina = (vals.forca + vals.vitalidade) * 3 + bonus[3];
+    var bolso = 2 + vals.forca + vals.vitalidade;
+    var el = document.getElementById('calcResult');
+    if (!el) return;
+    el.innerHTML =
+      '<div><span>Vida</span><b>' + vida + '</b></div>' +
+      '<div><span>Sanidade</span><b>' + sanidade + '</b></div>' +
+      '<div><span>Mana</span><b>' + mana + '</b></div>' +
+      '<div><span>Estamina</span><b>' + estamina + '</b></div>' +
+      '<div><span>Inventário de Bolso</span><b>' + bolso + '</b></div>';
+  }
+  if (calcAttrs.length) {
+    calcAttrs.forEach(function(inp){ inp.addEventListener('input', updateCalc); });
+    calcClassSel.addEventListener('change', updateCalc);
+    updateCalc();
+  }
+})();
+</script>
+</body>
+</html>
