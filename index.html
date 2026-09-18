@@ -100,6 +100,31 @@ b{color:var(--ink);font-weight:600;}
   font-style:italic;
   margin:0 0 1.75rem;
 }
+.tab-bar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.4rem;
+  margin:0 0 1.4rem;
+}
+.tab-btn{
+  background:var(--bg);
+  border:1px solid var(--line);
+  color:var(--ink-muted);
+  font-family:"Cinzel",serif;
+  font-size:.72rem;
+  letter-spacing:.02em;
+  padding:.45rem .7rem;
+  cursor:pointer;
+  transition:border-color .15s ease, color .15s ease, background .15s ease;
+}
+.tab-btn:hover{color:var(--ink);border-color:var(--gold-soft);}
+.tab-btn.active{color:var(--gold);border-color:var(--gold);background:var(--bg-card);}
+
+.nav-item.tab-hidden{display:none;}
+.chapter.tab-hidden{display:none;}
+body.is-searching .nav-item.tab-hidden{display:block;}
+body.is-searching .chapter.tab-hidden{display:block;}
+
 .search-box{margin:0 0 1.5rem;}
 .search-box input{
   width:100%;
@@ -239,12 +264,19 @@ main{
   flex-direction:column;
   gap:.35rem;
   transition:border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+  font-family:inherit;
+  font-size:1rem;
+  text-align:left;
+  cursor:pointer;
+  width:100%;
+  box-sizing:border-box;
 }
 .toc-card:hover{
   border-color:var(--gold-soft);
   transform:translateY(-2px);
   box-shadow:0 6px 18px -6px rgba(185,148,86,.3);
 }
+.toc-card.active{border-color:var(--gold);background:var(--bg-panel);}
 .toc-card .num{font-family:"Cinzel",serif;color:var(--gold);font-size:.8rem;}
 .toc-card .label{color:var(--ink);font-size:.92rem;}
 
@@ -459,29 +491,36 @@ footer{
   <aside class="sidebar" id="sidebar">
     <p class="sidebar-title">Baptism of Blood</p>
     <p class="sidebar-sub">Sistema de Fichas de RP de Vampiro</p>
+    <div class="tab-bar"><button type="button" class="tab-btn" data-section="lore">Lore</button>
+<button type="button" class="tab-btn" data-section="sistema">Sistema</button>
+<button type="button" class="tab-btn" data-section="npcs">NPCs</button>
+<button type="button" class="tab-btn" data-section="jornal">Jornal</button>
+<button type="button" class="tab-btn" data-section="ferramentas">Ferramentas</button></div>
     <div class="search-box">
       <input type="search" id="pageSearch" placeholder="Buscar perícia, arma, magia..." aria-label="Buscar no sistema">
       <p id="searchCount" class="search-count" hidden></p>
     </div>
     <nav aria-label="Índice">
-      <ul><li><a href="#visao-geral" data-target="visao-geral"><span class="num">I</span>Visão Geral</a></li>
-<li><a href="#o-mundo" data-target="o-mundo"><span class="num">II</span>O Mundo</a></li>
-<li><a href="#sinopse" data-target="sinopse"><span class="num">III</span>Sinopse</a></li>
-<li><a href="#mecanica" data-target="mecanica"><span class="num">IV</span>Mecânica de Teste</a></li>
-<li><a href="#atributos" data-target="atributos"><span class="num">V</span>Atributos</a></li>
-<li><a href="#recursos" data-target="recursos"><span class="num">VI</span>Recursos</a></li>
-<li><a href="#pericias" data-target="pericias"><span class="num">VII</span>Perícias Comuns</a></li>
-<li><a href="#pericias-especiais" data-target="pericias-especiais"><span class="num">VIII</span>Perícias Especiais</a></li>
-<li><a href="#disciplinas" data-target="disciplinas"><span class="num">IX</span>Disciplinas</a></li>
-<li><a href="#magia" data-target="magia"><span class="num">X</span>Sistema de Magia</a></li>
-<li><a href="#combate" data-target="combate"><span class="num">XI</span>Combate</a></li>
-<li><a href="#inventario" data-target="inventario"><span class="num">XII</span>Inventário</a></li>
-<li><a href="#raca-vampiro" data-target="raca-vampiro"><span class="num">XIII</span>Raça Vampiro</a></li>
-<li><a href="#classes" data-target="classes"><span class="num">XIV</span>Classes</a></li>
-<li><a href="#habilidades-iniciais" data-target="habilidades-iniciais"><span class="num">XV</span>Habilidades Iniciais</a></li>
-<li><a href="#progressao" data-target="progressao"><span class="num">XVI</span>Progressão</a></li>
-<li><a href="#ferramentas" data-target="ferramentas"><span class="num">XVII</span>Ferramentas</a></li>
-<li><a href="#em-aberto" data-target="em-aberto"><span class="num">XVIII</span>Em Aberto</a></li></ul>
+      <ul><li class="nav-item" data-section="lore"><a href="#visao-geral" data-target="visao-geral"><span class="num">I</span>Visão Geral</a></li>
+<li class="nav-item" data-section="lore"><a href="#o-mundo" data-target="o-mundo"><span class="num">II</span>O Mundo</a></li>
+<li class="nav-item" data-section="lore"><a href="#sinopse" data-target="sinopse"><span class="num">III</span>Sinopse</a></li>
+<li class="nav-item" data-section="sistema"><a href="#mecanica" data-target="mecanica"><span class="num">I</span>Mecânica de Teste</a></li>
+<li class="nav-item" data-section="sistema"><a href="#atributos" data-target="atributos"><span class="num">II</span>Atributos</a></li>
+<li class="nav-item" data-section="sistema"><a href="#recursos" data-target="recursos"><span class="num">III</span>Recursos</a></li>
+<li class="nav-item" data-section="sistema"><a href="#pericias" data-target="pericias"><span class="num">IV</span>Perícias Comuns</a></li>
+<li class="nav-item" data-section="sistema"><a href="#pericias-especiais" data-target="pericias-especiais"><span class="num">V</span>Perícias Especiais</a></li>
+<li class="nav-item" data-section="sistema"><a href="#disciplinas" data-target="disciplinas"><span class="num">VI</span>Disciplinas</a></li>
+<li class="nav-item" data-section="sistema"><a href="#magia" data-target="magia"><span class="num">VII</span>Sistema de Magia</a></li>
+<li class="nav-item" data-section="sistema"><a href="#combate" data-target="combate"><span class="num">VIII</span>Combate</a></li>
+<li class="nav-item" data-section="sistema"><a href="#inventario" data-target="inventario"><span class="num">IX</span>Inventário</a></li>
+<li class="nav-item" data-section="sistema"><a href="#raca-vampiro" data-target="raca-vampiro"><span class="num">X</span>Raça Vampiro</a></li>
+<li class="nav-item" data-section="sistema"><a href="#classes" data-target="classes"><span class="num">XI</span>Classes</a></li>
+<li class="nav-item" data-section="sistema"><a href="#habilidades-iniciais" data-target="habilidades-iniciais"><span class="num">XII</span>Habilidades Iniciais</a></li>
+<li class="nav-item" data-section="sistema"><a href="#progressao" data-target="progressao"><span class="num">XIII</span>Progressão</a></li>
+<li class="nav-item" data-section="sistema"><a href="#em-aberto" data-target="em-aberto"><span class="num">XIV</span>Em Aberto</a></li>
+<li class="nav-item" data-section="npcs"><a href="#npcs" data-target="npcs"><span class="num">I</span>NPCs</a></li>
+<li class="nav-item" data-section="jornal"><a href="#jornal" data-target="jornal"><span class="num">I</span>Jornal</a></li>
+<li class="nav-item" data-section="ferramentas"><a href="#ferramentas" data-target="ferramentas"><span class="num">I</span>Ferramentas</a></li></ul>
     </nav>
   </aside>
 
@@ -499,28 +538,15 @@ footer{
 </svg>
         <h1>Baptism of Blood</h1>
         <p class="sub">Sistema de Fichas de RP de Vampiro, França, séculos XVI a XVIII</p>
-        <div class="toc-grid"><a class="toc-card" href="#visao-geral"><span class="num">I</span><span class="label">Visão Geral</span></a>
-<a class="toc-card" href="#o-mundo"><span class="num">II</span><span class="label">O Mundo</span></a>
-<a class="toc-card" href="#sinopse"><span class="num">III</span><span class="label">Sinopse</span></a>
-<a class="toc-card" href="#mecanica"><span class="num">IV</span><span class="label">Mecânica de Teste</span></a>
-<a class="toc-card" href="#atributos"><span class="num">V</span><span class="label">Atributos</span></a>
-<a class="toc-card" href="#recursos"><span class="num">VI</span><span class="label">Recursos</span></a>
-<a class="toc-card" href="#pericias"><span class="num">VII</span><span class="label">Perícias Comuns</span></a>
-<a class="toc-card" href="#pericias-especiais"><span class="num">VIII</span><span class="label">Perícias Especiais</span></a>
-<a class="toc-card" href="#disciplinas"><span class="num">IX</span><span class="label">Disciplinas</span></a>
-<a class="toc-card" href="#magia"><span class="num">X</span><span class="label">Sistema de Magia</span></a>
-<a class="toc-card" href="#combate"><span class="num">XI</span><span class="label">Combate</span></a>
-<a class="toc-card" href="#inventario"><span class="num">XII</span><span class="label">Inventário</span></a>
-<a class="toc-card" href="#raca-vampiro"><span class="num">XIII</span><span class="label">Raça Vampiro</span></a>
-<a class="toc-card" href="#classes"><span class="num">XIV</span><span class="label">Classes</span></a>
-<a class="toc-card" href="#habilidades-iniciais"><span class="num">XV</span><span class="label">Habilidades Iniciais</span></a>
-<a class="toc-card" href="#progressao"><span class="num">XVI</span><span class="label">Progressão</span></a>
-<a class="toc-card" href="#ferramentas"><span class="num">XVII</span><span class="label">Ferramentas</span></a>
-<a class="toc-card" href="#em-aberto"><span class="num">XVIII</span><span class="label">Em Aberto</span></a></div>
+        <div class="toc-grid"><button type="button" class="toc-card tab-btn" data-section="lore"><span class="num">I</span><span class="label">Lore</span></button>
+<button type="button" class="toc-card tab-btn" data-section="sistema"><span class="num">II</span><span class="label">Sistema</span></button>
+<button type="button" class="toc-card tab-btn" data-section="npcs"><span class="num">III</span><span class="label">NPCs</span></button>
+<button type="button" class="toc-card tab-btn" data-section="jornal"><span class="num">IV</span><span class="label">Jornal</span></button>
+<button type="button" class="toc-card tab-btn" data-section="ferramentas"><span class="num">V</span><span class="label">Ferramentas</span></button></div>
       </div>
 
       
-<section class="chapter" id="visao-geral">
+<section class="chapter" id="visao-geral" data-section="lore">
   <header class="chapter-head">
     <span class="chapter-num">I</span>
     <h2>Visão Geral</h2>
@@ -530,7 +556,7 @@ footer{
   <p class="dropcap">Este documento reúne toda a estrutura mecânica fechada até agora: atributos, recursos, perícias, perícias especiais, disciplinas vampíricas, magia, combate, inventário, raça vampiro, classes e o esboço de honra e reputação.</p>
   <p>A ficha de personagem terá duas partes distintas: a <b>ficha sistemática</b>, números e mecânicas, descrita aqui, e a <b>ficha de lore</b>, com biografia e personalidade, em documento separado. Economia ainda está em desenvolvimento.</p>
 </section>
-<section class="chapter" id="o-mundo">
+<section class="chapter" id="o-mundo" data-section="lore">
   <header class="chapter-head">
     <span class="chapter-num">II</span>
     <h2>O Mundo</h2>
@@ -557,7 +583,7 @@ footer{
 
   <div class="epigraph">Le destin des aristocrates est la mort.</div>
 </section>
-<section class="chapter" id="sinopse">
+<section class="chapter" id="sinopse" data-section="lore">
   <header class="chapter-head">
     <span class="chapter-num">III</span>
     <h2>Sinopse</h2>
@@ -592,9 +618,9 @@ footer{
 
   <div class="epigraph">Liberté, Égalité, Fraternité, ou celui qui est tombé du ciel.</div>
 </section>
-<section class="chapter" id="mecanica">
+<section class="chapter" id="mecanica" data-section="sistema">
   <header class="chapter-head">
-    <span class="chapter-num">IV</span>
+    <span class="chapter-num">I</span>
     <h2>Mecânica de Teste</h2>
   </header>
   <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
@@ -613,9 +639,9 @@ footer{
 <tr data-search="35+"><td data-label="DT">35+</td><td data-label="Nível">Sobe a partir daqui</td></tr></tbody>
   </table></div>
 </section>
-<section class="chapter" id="atributos">
+<section class="chapter" id="atributos" data-section="sistema">
   <header class="chapter-head">
-    <span class="chapter-num">V</span>
+    <span class="chapter-num">II</span>
     <h2>Atributos</h2>
   </header>
   <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
@@ -670,9 +696,9 @@ footer{
       </div>
     </details></div>
 </section>
-<section class="chapter" id="recursos">
+<section class="chapter" id="recursos" data-section="sistema">
   <header class="chapter-head">
-    <span class="chapter-num">VI</span>
+    <span class="chapter-num">III</span>
     <h2>Recursos</h2>
   </header>
   <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
@@ -683,9 +709,9 @@ footer{
   <p class="formula">Estamina = (Força + Vitalidade) × 3 <span>(+ bônus da classe)</span></p>
   <p>Mana e Estamina se recuperam ao descansar ou ao fim de uma cena. O ritmo depende da ordem cronológica das cenas, a critério do mestre. Meditar ou dormir durante uma cena também recupera as duas.</p>
 </section>
-<section class="chapter" id="pericias">
+<section class="chapter" id="pericias" data-section="sistema">
   <header class="chapter-head">
-    <span class="chapter-num">VII</span>
+    <span class="chapter-num">IV</span>
     <h2>Perícias Comuns</h2>
   </header>
   <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
@@ -836,9 +862,9 @@ footer{
       </div>
     </details></div>
 </section>
-<section class="chapter" id="pericias-especiais">
+<section class="chapter" id="pericias-especiais" data-section="sistema">
   <header class="chapter-head">
-    <span class="chapter-num">VIII</span>
+    <span class="chapter-num">V</span>
     <h2>Perícias Especiais</h2>
   </header>
   <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
@@ -886,9 +912,9 @@ footer{
       </div>
     </details></div>
 </section>
-<section class="chapter" id="disciplinas">
+<section class="chapter" id="disciplinas" data-section="sistema">
   <header class="chapter-head">
-    <span class="chapter-num">IX</span>
+    <span class="chapter-num">VI</span>
     <h2>Disciplinas</h2>
   </header>
   <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
@@ -1036,9 +1062,9 @@ footer{
       </div>
     </details></div>
 </section>
-<section class="chapter" id="magia">
+<section class="chapter" id="magia" data-section="sistema">
   <header class="chapter-head">
-    <span class="chapter-num">X</span>
+    <span class="chapter-num">VII</span>
     <h2>Sistema de Magia</h2>
   </header>
   <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
@@ -1126,9 +1152,9 @@ footer{
   <h3>Constructos (Magias de Efeito Contínuo)</h3>
   <p>Um constructo é qualquer magia do tipo Efeito Contínuo, ou seja, que dura mais de um turno. Um personagem só consegue manter, ao mesmo tempo, uma quantidade de constructos ativos igual à soma de Razão + Alma.</p>
 </section>
-<section class="chapter" id="combate">
+<section class="chapter" id="combate" data-section="sistema">
   <header class="chapter-head">
-    <span class="chapter-num">XI</span>
+    <span class="chapter-num">VIII</span>
     <h2>Combate</h2>
   </header>
   <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
@@ -1184,9 +1210,9 @@ footer{
   <h3>HP Zerado</h3>
   <p>Quando o HP chega a 0, o personagem tem 3 turnos para ser estabilizado por alguém antes de morrer. A Dificuldade do teste de estabilização sobe a cada turno: 15 no primeiro, 20 no segundo, 25 no terceiro. Se o personagem for reestabilizado e cair a 0 de novo no mesmo combate, o ciclo reinicia com Dificuldade mais alta: 30, depois 35, subindo a cada novo ciclo.</p>
 </section>
-<section class="chapter" id="inventario">
+<section class="chapter" id="inventario" data-section="sistema">
   <header class="chapter-head">
-    <span class="chapter-num">XII</span>
+    <span class="chapter-num">IX</span>
     <h2>Inventário</h2>
   </header>
   <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
@@ -1195,9 +1221,9 @@ footer{
   <p class="formula">Inventário de Bolso = 2 + Força + Vitalidade</p>
   <p>O que o personagem carrega consigo, sem peso ou tamanho por item, só contagem.</p>
 </section>
-<section class="chapter" id="raca-vampiro">
+<section class="chapter" id="raca-vampiro" data-section="sistema">
   <header class="chapter-head">
-    <span class="chapter-num">XIII</span>
+    <span class="chapter-num">X</span>
     <h2>Raça Vampiro</h2>
   </header>
   <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
@@ -1211,9 +1237,9 @@ footer{
   <p><b>Água Sagrada</b>: em vampiros, causa um efeito de envenenamento cuja intensidade depende da quantidade usada. O tipo de efeito e o dano exatos são definidos pelo mestre ou pelos próprios players durante o RP.</p>
   <p><b>Armas Sagradas</b>: crucifixos e outras armas abençoadas causam triplo de dano em demônios.</p>
 </section>
-<section class="chapter" id="classes">
+<section class="chapter" id="classes" data-section="sistema">
   <header class="chapter-head">
-    <span class="chapter-num">XIV</span>
+    <span class="chapter-num">XI</span>
     <h2>Classes</h2>
   </header>
   <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
@@ -1291,9 +1317,9 @@ footer{
       <p class="class-vant">Vantagem nas Perícias: Ciências e Investigação</p>
     </article></div>
 </section>
-<section class="chapter" id="habilidades-iniciais">
+<section class="chapter" id="habilidades-iniciais" data-section="sistema">
   <header class="chapter-head">
-    <span class="chapter-num">XV</span>
+    <span class="chapter-num">XII</span>
     <h2>Habilidades Iniciais</h2>
   </header>
   <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
@@ -1320,9 +1346,9 @@ footer{
     </details>
   </div>
 </section>
-<section class="chapter" id="progressao">
+<section class="chapter" id="progressao" data-section="sistema">
   <header class="chapter-head">
-    <span class="chapter-num">XVI</span>
+    <span class="chapter-num">XIII</span>
     <h2>Progressão de Personagem</h2>
   </header>
   <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
@@ -1333,9 +1359,9 @@ footer{
   <p>Atributo sobe mais devagar de propósito: a progressão é pensada pra manter os personagens relativamente fracos ao longo do tempo, não pra virarem lendas em poucas sessões.</p>
   <p>Pontos de Atributo ganhos por nível podem ultrapassar o limite de criação (3 pro humano, 5 pro vampiro). Isso representa o personagem crescendo além do que é natural pra sua raça através da experiência, e não um erro de ficha.</p>
 </section>
-<section class="chapter" id="ferramentas">
+<section class="chapter" id="ferramentas" data-section="ferramentas">
   <header class="chapter-head">
-    <span class="chapter-num">XVII</span>
+    <span class="chapter-num">I</span>
     <h2>Ferramentas</h2>
   </header>
   <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
@@ -1383,9 +1409,9 @@ footer{
     <div id="calcResult" class="calc-result"></div>
   </div>
 </section>
-<section class="chapter" id="em-aberto">
+<section class="chapter" id="em-aberto" data-section="sistema">
   <header class="chapter-head">
-    <span class="chapter-num">XVIII</span>
+    <span class="chapter-num">XIV</span>
     <h2>Em Aberto</h2>
   </header>
   <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
@@ -1396,6 +1422,24 @@ footer{
     <li>Ficha de lore (documento separado)</li>
     <li>Honra e Reputação (ainda será feito)</li>
   </ul>
+</section>
+<section class="chapter" id="npcs" data-section="npcs">
+  <header class="chapter-head">
+    <span class="chapter-num">I</span>
+    <h2>NPCs</h2>
+  </header>
+  <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
+
+  <p>Nenhum NPC cadastrado ainda. Manda os nomes, papéis e descrições que eu adiciono aqui, um por um.</p>
+</section>
+<section class="chapter" id="jornal" data-section="jornal">
+  <header class="chapter-head">
+    <span class="chapter-num">I</span>
+    <h2>Jornal</h2>
+  </header>
+  <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
+
+  <p>Registro semanal do que os personagens andam fazendo, mais recente primeiro. Ainda sem entradas; é só me contar as novidades da semana que eu registro aqui.</p>
 </section>
 
       <footer>Documento vivo, sistema ainda em desenvolvimento. Consulte o capítulo "Em Aberto" para o que falta fechar.</footer>
@@ -1444,12 +1488,34 @@ footer{
     sections.forEach(function(s){ observer.observe(s); });
   }
 
+  var tabBtns = Array.prototype.slice.call(document.querySelectorAll('.tab-btn'));
+  function setActiveSection(sec){
+    document.querySelectorAll('.chapter').forEach(function(ch){
+      ch.classList.toggle('tab-hidden', ch.dataset.section !== sec);
+    });
+    document.querySelectorAll('.nav-item').forEach(function(li){
+      li.classList.toggle('tab-hidden', li.dataset.section !== sec);
+    });
+    tabBtns.forEach(function(b){
+      b.classList.toggle('active', b.dataset.section === sec);
+    });
+  }
+  tabBtns.forEach(function(b){
+    b.addEventListener('click', function(){
+      setActiveSection(b.dataset.section);
+      window.scrollTo({ top: 0 });
+      if (window.innerWidth < 900) closeNav();
+    });
+  });
+  setActiveSection('lore');
+
   var searchInput = document.getElementById('pageSearch');
   var searchCount = document.getElementById('searchCount');
   var searchables = Array.prototype.slice.call(document.querySelectorAll('[data-search]'));
   if (searchInput) {
     searchInput.addEventListener('input', function(){
       var q = searchInput.value.trim().toLowerCase();
+      document.body.classList.toggle('is-searching', !!q);
       if (!q) {
         searchables.forEach(function(el){ el.classList.remove('search-hide'); });
         searchCount.hidden = true;
