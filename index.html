@@ -503,6 +503,7 @@ tbody tr:nth-child(even){background:rgba(255,255,255,.02);}
 }
 .tool-box h3{margin:0 0 .8rem;}
 .tool-hint{font-size:.88rem;color:var(--ink-muted);margin:0 0 1rem;}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.86em;color:var(--gold-soft);background:var(--bg-card);border:1px solid var(--line-soft);padding:.05rem .35rem;border-radius:2px;white-space:nowrap;}
 .dice-controls{display:flex;flex-wrap:wrap;align-items:end;gap:.9rem;}
 .dice-controls label, .calc-grid label{
   display:flex;
@@ -598,14 +599,16 @@ footer{
 <li class="nav-item" data-section="sistema"><a href="#magia" data-target="magia"><span class="num">VII</span>Sistema de Magia</a></li>
 <li class="nav-item" data-section="sistema"><a href="#combate" data-target="combate"><span class="num">VIII</span>Combate</a></li>
 <li class="nav-item" data-section="sistema"><a href="#inventario" data-target="inventario"><span class="num">IX</span>Inventário</a></li>
-<li class="nav-item" data-section="sistema"><a href="#raca-vampiro" data-target="raca-vampiro"><span class="num">X</span>Raça Vampiro</a></li>
-<li class="nav-item" data-section="sistema"><a href="#classes" data-target="classes"><span class="num">XI</span>Classes</a></li>
-<li class="nav-item" data-section="sistema"><a href="#habilidades-iniciais" data-target="habilidades-iniciais"><span class="num">XII</span>Habilidades Iniciais</a></li>
-<li class="nav-item" data-section="sistema"><a href="#progressao" data-target="progressao"><span class="num">XIII</span>Progressão</a></li>
-<li class="nav-item" data-section="sistema"><a href="#em-aberto" data-target="em-aberto"><span class="num">XIV</span>Em Aberto</a></li>
+<li class="nav-item" data-section="sistema"><a href="#racas" data-target="racas"><span class="num">X</span>Raças</a></li>
+<li class="nav-item" data-section="sistema"><a href="#classe-social" data-target="classe-social"><span class="num">XI</span>Classe Social<span class="new-badge">novo</span></a></li>
+<li class="nav-item" data-section="sistema"><a href="#classes" data-target="classes"><span class="num">XII</span>Classes</a></li>
+<li class="nav-item" data-section="sistema"><a href="#habilidades-iniciais" data-target="habilidades-iniciais"><span class="num">XIII</span>Habilidades Iniciais</a></li>
+<li class="nav-item" data-section="sistema"><a href="#progressao" data-target="progressao"><span class="num">XIV</span>Progressão</a></li>
+<li class="nav-item" data-section="sistema"><a href="#em-aberto" data-target="em-aberto"><span class="num">XV</span>Em Aberto</a></li>
 <li class="nav-item" data-section="npcs"><a href="#npcs" data-target="npcs"><span class="num">I</span>NPCs<span class="new-badge">novo</span></a></li>
 <li class="nav-item" data-section="jornal"><a href="#jornal" data-target="jornal"><span class="num">I</span>Jornal<span class="new-badge">novo</span></a></li>
-<li class="nav-item" data-section="ferramentas"><a href="#ferramentas" data-target="ferramentas"><span class="num">I</span>Ferramentas</a></li></ul>
+<li class="nav-item" data-section="ferramentas"><a href="#ferramentas" data-target="ferramentas"><span class="num">I</span>Ferramentas</a></li>
+<li class="nav-item" data-section="ferramentas"><a href="#bot-discord" data-target="bot-discord"><span class="num">II</span>Bot de Discord<span class="new-badge">novo</span></a></li></ul>
     </nav>
   </aside>
 
@@ -659,7 +662,7 @@ footer{
   </header>
   <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
 
-  <p class="dropcap">Este documento reúne toda a estrutura mecânica fechada até agora: atributos, recursos, perícias, perícias especiais, disciplinas vampíricas, magia, combate, inventário, raça vampiro, classes e o esboço de honra e reputação.</p>
+  <p class="dropcap">Este documento reúne toda a estrutura mecânica fechada até agora: atributos, recursos, perícias, perícias especiais, disciplinas vampíricas, magia, combate, inventário, raças, classe social, classes, progressão por XP e o esboço de honra e reputação. O bot de Discord, que automatiza a ficha, tem capítulo próprio na aba Ferramentas.</p>
   <p>A ficha de personagem terá duas partes distintas: a <b>ficha sistemática</b>, números e mecânicas, descrita aqui, e a <b>ficha de lore</b>, com biografia e personalidade, em documento separado. Economia ainda está em desenvolvimento.</p>
 </section>
 <section class="chapter" id="o-mundo" data-section="lore">
@@ -753,6 +756,7 @@ footer{
   <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
 
   <p>6 pontos para distribuir entre os 6 atributos na criação do personagem.</p>
+  <p>Os limites de atributo do Dhampir ainda não foram definidos (ver Em Aberto).</p>
   <div class="entry-grid two">
     <details class="entry" data-search="força">
       <summary>Força</summary>
@@ -975,8 +979,8 @@ footer{
   </header>
   <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
 
-  <p>Ritualismo, Alquimia, Forja, Culinária e Fé não são compradas com pontos na criação. Funcionam como um sistema de permissão, não de bônus: o grau representa o que o personagem é realmente capaz de fazer. Sem nenhum grau, o personagem não sabe fazer aquilo. Pode tentar, mas o risco de um resultado desastroso é alto.</p>
-  <p>Cada perícia especial tem 10 graus: 1 é o básico, 10 é a maestria completa. O progresso é adquirido ao longo do RP, em cenas em que o personagem pratica ou demonstra a habilidade; conceder um grau novo é decisão do mestre. Um personagem com histórico ligado a uma dessas áreas pode começar já com grau inicial, conforme sua classe.</p>
+  <p>Ritualismo, Alquimia, Forja, Culinária e Fé não são compradas com pontos na criação. Funcionam como um sistema de permissão, não de bônus: o Rank representa o que o personagem é realmente capaz de fazer. Sem nenhum Rank, o personagem não sabe fazer aquilo. Pode tentar, mas o risco de um resultado desastroso é alto.</p>
+  <p>Cada perícia especial vai do Rank 0 ao 10: 0 é não saber fazer, 1 é o básico, 10 é a maestria completa. O progresso é adquirido ao longo do RP, em cenas em que o personagem pratica ou demonstra a habilidade; conceder um Rank novo é decisão dos mestres. Um personagem com histórico ligado a uma dessas áreas pode começar já com Rank inicial, conforme sua classe.</p>
   <div class="entry-grid two">
     <details class="entry" data-search="ritualismo">
       <summary>Ritualismo</summary>
@@ -1025,8 +1029,9 @@ footer{
   </header>
   <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
 
-  <p>Poderes sobrenaturais exclusivos de vampiros, o equivalente a uma característica genética da condição vampírica. Uma Disciplina não é testada sozinha: não existe "teste de Disciplina". Ela é uma capacidade nata, sempre presente, que faz duas coisas: destrava o que o vampiro consegue fazer (Grau 0 = não tem o poder) e dá bônus nos testes ligados a ela: +1 por grau, mais vantagem (rola dois dados e fica com o melhor).</p>
-  <p>Na criação da ficha, o vampiro recebe <b>4 pontos</b> para distribuir entre as Disciplinas (1 ponto = 1 grau). O grau máximo permitido na criação é <b>3</b>. Os graus 4 e 5 só são conquistados depois, durante o jogo.</p>
+  <p>Poderes sobrenaturais exclusivos de vampiros e dhampirs, o equivalente a uma característica genética da condição vampírica. Uma Disciplina não é testada sozinha: não existe "teste de Disciplina". Ela é uma capacidade nata, sempre presente, que faz duas coisas: destrava o que o vampiro consegue fazer (Grau 0 = não tem o poder) e dá bônus nos testes ligados a ela: +1 por grau, mais vantagem (rola dois dados e fica com o melhor).</p>
+  <p>Na criação da ficha, o vampiro recebe <b>4 pontos</b> para distribuir entre as Disciplinas (1 ponto = 1 grau), e o dhampir recebe <b>3</b>. O grau máximo permitido na criação é <b>3</b>. Os graus 4 e 5 só são conquistados depois, durante o jogo.</p>
+  <p><b>Pontos por nível:</b> vampiros e dhampirs ganham +1 ponto de Disciplina a cada 2 níveis (níveis 2, 4, 6, 8 e 10), pra distribuir nas Disciplinas. Isso se soma à regra de que os graus 4 e 5 só são conquistados durante o jogo. Humanos não ganham esse ponto.</p>
   <div class="entry-grid one">
     <details class="entry" data-search="potência">
       <summary>Potência</summary>
@@ -1195,7 +1200,7 @@ footer{
     <details class="entry" data-search="divina">
       <summary>Divina</summary>
       <div class="entry-body">
-        <p>Concedida por uma força celestial ou sagrada. Exclusiva de clero e nobreza com Fé suficiente para desbloquear o acesso. Não pode ser criada por conta própria a menos que o personagem faça parte do clero; só pode ser ensinada. O Rank dela acompanha o Rank da perícia especial Fé.</p>
+        <p>Concedida por uma força celestial ou sagrada. Exclusiva de clero e nobreza com Fé suficiente para desbloquear o acesso (ver Classe Social). Não pode ser criada por conta própria a menos que o personagem faça parte do clero; só pode ser ensinada. O Rank dela acompanha o Rank da perícia especial Fé.</p>
         
       </div>
     </details>
@@ -1327,25 +1332,75 @@ footer{
   <p class="formula">Inventário de Bolso = 2 + Força + Vitalidade</p>
   <p>O que o personagem carrega consigo, sem peso ou tamanho por item, só contagem.</p>
 </section>
-<section class="chapter" id="raca-vampiro" data-section="sistema">
+<section class="chapter" id="racas" data-section="sistema">
   <header class="chapter-head">
     <span class="chapter-num">X</span>
-    <h2>Raça Vampiro</h2>
+    <h2>Raças</h2>
   </header>
   <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
 
+  <h3>Sorteio de Raça</h3>
+  <p>Rolado em 1d100 na criação, uma vez só por personagem.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Raça</th><th>Resultado no 1d100</th><th>Chance</th></tr></thead>
+    <tbody>
+<tr data-search="humano 1–85 85%"><td data-label="Raça">Humano</td><td data-label="Resultado no 1d100">1–85</td><td data-label="Chance">85%</td></tr>
+<tr data-search="vampiro 86–95 10%"><td data-label="Raça">Vampiro</td><td data-label="Resultado no 1d100">86–95</td><td data-label="Chance">10%</td></tr>
+<tr data-search="dhampir 96–100 5%"><td data-label="Raça">Dhampir</td><td data-label="Resultado no 1d100">96–100</td><td data-label="Chance">5%</td></tr></tbody>
+  </table></div>
+
+  <h3>Humano</h3>
+  <p>Não tem Disciplinas. Limites de atributo na criação: Força, Destreza e Vitalidade até 3, Razão até 6. Vontade e Alma sem limite.</p>
+
+  <h3>Vampiro</h3>
   <p>Limites de atributo: Força, Destreza e Vitalidade até 5 (contra 3 do humano). Razão, Vontade e Alma seguem sem limite definido.</p>
-  <h3>Fraquezas</h3>
+
+  <h3>Fraquezas do Vampiro</h3>
   <p><b>Sol</b>: exposição direta causa dificuldades crescentes. Sugestão de escala: 1º turno exposto, −2 em todos os testes, sem dano ainda; 2º turno, 1d6 de dano, −4 nos testes, Disciplinas bloqueadas; 3º turno em diante, 2d6 de dano por turno, −6 nos testes, risco real de morte.</p>
   <p><b>Prata</b>: causa dano dobrado em vampiros, mesma regra vale para demônios. Também bloqueia a Regeneração enquanto o ferimento não for tratado.</p>
+  <p><b>Fome</b>: vampiro que fica muito tempo sem se alimentar adequadamente enfraquece e, no limite, enlouquece. 1 dia: −2 em todos os testes. 3 dias: −4 nos testes, Disciplinas custam o dobro de Mana/Estamina. 5 dias ou mais: entra em frenesi, precisa passar num teste de Vontade (DT 20) pra não atacar a criatura viva mais próxima em busca de sangue.</p>
   <p><b>Estaca</b>: perfurar o coração de um vampiro é um golpe difícil de acertar (DT alta, a definir junto do sistema de dano de arma). Se acertar, causa paralisia instantânea. Se a estaca não for removida, o vampiro entra em risco de morte definitiva, mesma lógica do HP zerado, sem poder usar Regeneração enquanto ela estiver enfiada.</p>
   <p><b>Decapitação</b>: mata de forma definitiva, sem chance de Regeneração mesmo em Grau 5. É basicamente a única forma totalmente garantida de matar um vampiro para sempre.</p>
   <p><b>Água Sagrada</b>: em vampiros, causa um efeito de envenenamento cuja intensidade depende da quantidade usada. O tipo de efeito e o dano exatos são definidos pelo mestre ou pelos próprios players durante o RP.</p>
   <p><b>Armas Sagradas</b>: crucifixos e outras armas abençoadas causam triplo de dano em demônios.</p>
+
+  <h3>Dhampir</h3>
+  <p>A junção de humano com vampiro. Alucard é um Dhampir. É um meio termo: perde algumas fraquezas do vampiro, mas nasce com menos poder sobrenatural. É uma raça forte e difícil de conseguir, e por isso rara.</p>
+  <p><b>Disciplinas</b>: começa com 3 pontos pra distribuir (o vampiro começa com 4). Com 3 pontos, o máximo possível na criação é o grau 3. Depois disso ganha pontos de Disciplina na mesma quantidade que o vampiro (ver Disciplinas).</p>
+  <p><b>Fraquezas que não tem</b>: Sol e Fome.</p>
+  <p><b>Fraquezas que mantém</b>: Prata, Estaca, Decapitação, Armas Sagradas e Água Sagrada. Algumas são mais fracas nele do que no vampiro; quanto exatamente, os mestres decidem depois (ver Em Aberto).</p>
+  <p><b>Limites de atributo</b>: ainda não definidos (ver Em Aberto).</p>
+</section>
+<section class="chapter" id="classe-social" data-section="sistema">
+  <header class="chapter-head">
+    <span class="chapter-num">XI</span>
+    <h2>Classe Social</h2>
+  </header>
+  <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
+
+  <p>Rolada em 1d100 na criação, uma vez só por personagem. Representa o Estado em que o personagem nasceu, conforme os três estados descritos em O Mundo (aba Lore). No bot, o <code>/classe_social</code> faz o sorteio e registra o Estado.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Resultado</th><th>Resultado no 1d100</th><th>Chance</th></tr></thead>
+    <tbody>
+<tr data-search="3º estado (povo: camponeses e sans-culottes) 1–80 80%"><td data-label="Resultado">3º Estado (Povo: camponeses e sans-culottes)</td><td data-label="Resultado no 1d100">1–80</td><td data-label="Chance">80%</td></tr>
+<tr data-search="2º estado (nobreza) 81–91 11%"><td data-label="Resultado">2º Estado (Nobreza)</td><td data-label="Resultado no 1d100">81–91</td><td data-label="Chance">11%</td></tr>
+<tr data-search="1º estado (clero) 92–99 8%"><td data-label="Resultado">1º Estado (Clero)</td><td data-label="Resultado no 1d100">92–99</td><td data-label="Chance">8%</td></tr>
+<tr data-search="o mestre decide o estado 100 1%"><td data-label="Resultado">O mestre decide o Estado</td><td data-label="Resultado no 1d100">100</td><td data-label="Chance">1%</td></tr></tbody>
+  </table></div>
+
+  <h3>Clero</h3>
+  <p>Quem cai no 1º Estado rola outro 1d100 na hora.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Segundo 1d100</th><th>Resultado</th></tr></thead>
+    <tbody>
+<tr data-search="1–49 baixo clero"><td data-label="Segundo 1d100">1–49</td><td data-label="Resultado">Baixo Clero</td></tr>
+<tr data-search="50–100 alto clero"><td data-label="Segundo 1d100">50–100</td><td data-label="Resultado">Alto Clero</td></tr></tbody>
+  </table></div>
+  <p>A Magia Divina é exclusiva de clero e nobreza com Fé suficiente (ver Sistema de Magia). As vantagens e restrições de cada Estado, e de Alto e Baixo Clero, ainda não foram definidas (ver Em Aberto).</p>
 </section>
 <section class="chapter" id="classes" data-section="sistema">
   <header class="chapter-head">
-    <span class="chapter-num">XI</span>
+    <span class="chapter-num">XII</span>
     <h2>Classes</h2>
   </header>
   <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
@@ -1425,7 +1480,7 @@ footer{
 </section>
 <section class="chapter" id="habilidades-iniciais" data-section="sistema">
   <header class="chapter-head">
-    <span class="chapter-num">XII</span>
+    <span class="chapter-num">XIII</span>
     <h2>Habilidades Iniciais</h2>
   </header>
   <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
@@ -1454,16 +1509,39 @@ footer{
 </section>
 <section class="chapter" id="progressao" data-section="sistema">
   <header class="chapter-head">
-    <span class="chapter-num">XIII</span>
+    <span class="chapter-num">XIV</span>
     <h2>Progressão de Personagem</h2>
   </header>
   <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
 
-  <p>Nível máximo: 10. Subir de nível não segue uma fórmula fixa de pontos ou cenas; é decisão dos mestres, concedida em três situações: RP muito significativo pro personagem e reconhecido pelo grupo como um marco de verdade, missão secundária narrada pelos mestres, ou evento.</p>
-  <p>A cada nível, o personagem ganha 2 pontos de Perícia.</p>
-  <p>A cada 2 níveis, o personagem também ganha 1 ponto de Atributo (5 pontos no total até o nível 10) e escolhe entre criar uma habilidade nova, seguindo a mesma lógica da Habilidade Própria inicial, ou melhorar uma habilidade que já tem.</p>
+  <p>Nível máximo: 10. Todo personagem começa no nível 1, com 0 XP.</p>
+
+  <h3>Ganhando XP</h3>
+  <p>Só os mestres dão XP. Ele vem de roleplay importante, de missão de mestre e do desenvolvimento do personagem, sempre por roleplay e não por ação avulsa. O nível sobe automaticamente quando o XP chega no número da tabela.</p>
+
+  <h3>A conta</h3>
+  <p class="formula">XP pra sair do nível N = N × 1.000</p>
+  <p>O XP é somado, não zera a cada nível: 1.000 XP pra sair do nível 1, mais 2.000 pra sair do 2, mais 3.000 pra sair do 3, e assim por diante. O XP que passa do necessário vale pro nível seguinte, e dá pra subir mais de um nível de uma vez.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Nível</th><th>XP total pra chegar</th><th>Vantagens</th><th>Pontos de Atributo no total</th></tr></thead>
+    <tbody>
+<tr data-search="1 0 ficha inicial, feita na criação 6"><td data-label="Nível">1</td><td data-label="XP total pra chegar">0</td><td data-label="Vantagens">Ficha inicial, feita na criação</td><td data-label="Pontos de Atributo no total">6</td></tr>
+<tr data-search="2 1.000 +2 pontos de perícia, +1 ponto de atributo, habilidade nova ou melhorada 7"><td data-label="Nível">2</td><td data-label="XP total pra chegar">1.000</td><td data-label="Vantagens">+2 pontos de Perícia, +1 ponto de Atributo, habilidade nova ou melhorada</td><td data-label="Pontos de Atributo no total">7</td></tr>
+<tr data-search="3 3.000 +2 pontos de perícia 7"><td data-label="Nível">3</td><td data-label="XP total pra chegar">3.000</td><td data-label="Vantagens">+2 pontos de Perícia</td><td data-label="Pontos de Atributo no total">7</td></tr>
+<tr data-search="4 6.000 +2 pontos de perícia, +1 ponto de atributo, habilidade nova ou melhorada 8"><td data-label="Nível">4</td><td data-label="XP total pra chegar">6.000</td><td data-label="Vantagens">+2 pontos de Perícia, +1 ponto de Atributo, habilidade nova ou melhorada</td><td data-label="Pontos de Atributo no total">8</td></tr>
+<tr data-search="5 10.000 +2 pontos de perícia 8"><td data-label="Nível">5</td><td data-label="XP total pra chegar">10.000</td><td data-label="Vantagens">+2 pontos de Perícia</td><td data-label="Pontos de Atributo no total">8</td></tr>
+<tr data-search="6 15.000 +2 pontos de perícia, +1 ponto de atributo, habilidade nova ou melhorada 9"><td data-label="Nível">6</td><td data-label="XP total pra chegar">15.000</td><td data-label="Vantagens">+2 pontos de Perícia, +1 ponto de Atributo, habilidade nova ou melhorada</td><td data-label="Pontos de Atributo no total">9</td></tr>
+<tr data-search="7 21.000 +2 pontos de perícia 9"><td data-label="Nível">7</td><td data-label="XP total pra chegar">21.000</td><td data-label="Vantagens">+2 pontos de Perícia</td><td data-label="Pontos de Atributo no total">9</td></tr>
+<tr data-search="8 28.000 +2 pontos de perícia, +1 ponto de atributo, habilidade nova ou melhorada 10"><td data-label="Nível">8</td><td data-label="XP total pra chegar">28.000</td><td data-label="Vantagens">+2 pontos de Perícia, +1 ponto de Atributo, habilidade nova ou melhorada</td><td data-label="Pontos de Atributo no total">10</td></tr>
+<tr data-search="9 36.000 +2 pontos de perícia 10"><td data-label="Nível">9</td><td data-label="XP total pra chegar">36.000</td><td data-label="Vantagens">+2 pontos de Perícia</td><td data-label="Pontos de Atributo no total">10</td></tr>
+<tr data-search="10 (máximo) 45.000 +2 pontos de perícia, +1 ponto de atributo, habilidade nova ou melhorada 11"><td data-label="Nível">10 (máximo)</td><td data-label="XP total pra chegar">45.000</td><td data-label="Vantagens">+2 pontos de Perícia, +1 ponto de Atributo, habilidade nova ou melhorada</td><td data-label="Pontos de Atributo no total">11</td></tr></tbody>
+  </table></div>
+  <p><b>Disciplina</b>: vampiros e dhampirs ganham, além disso, +1 ponto de Disciplina nos níveis pares (2, 4, 6, 8 e 10).</p>
+  <p>Somando tudo do nível 1 ao 10: 18 pontos de Perícia, 5 pontos de Atributo e 5 habilidades novas ou melhoradas (mais 5 pontos de Disciplina pra vampiros e dhampirs). A coluna "Pontos de Atributo no total" soma os 6 pontos da criação com os que vêm de nível, e é a conta que o bot usa pra conferir a distribuição. Depois do nível 10 o XP continua contando, mas não sobe mais nível.</p>
+  <p>Nos níveis pares o personagem escolhe entre criar uma habilidade nova, seguindo a mesma lógica da Habilidade Própria inicial, ou melhorar uma habilidade que já tem.</p>
   <p>Atributo sobe mais devagar de propósito: a progressão é pensada pra manter os personagens relativamente fracos ao longo do tempo, não pra virarem lendas em poucas sessões.</p>
   <p>Pontos de Atributo ganhos por nível podem ultrapassar o limite de criação (3 pro humano, 5 pro vampiro). Isso representa o personagem crescendo além do que é natural pra sua raça através da experiência, e não um erro de ficha.</p>
+  <p>O nível não dá Vida direto: a Vida sobe quando os pontos de atributo vão pra Vitalidade (cada ponto vale +5 Vida e +3 Estamina).</p>
 </section>
 <section class="chapter" id="ferramentas" data-section="ferramentas">
   <header class="chapter-head">
@@ -1513,10 +1591,89 @@ footer{
     </label>
     <div id="calcResult" class="calc-result"></div>
   </div>
+
+  <div class="tool-box">
+    <h3>Quanto vale cada ponto</h3>
+    <div class="table-wrap"><table>
+    <thead><tr><th>Atributo</th><th>Cada ponto dá</th></tr></thead>
+    <tbody>
+<tr data-search="vitalidade +5 vida e +3 estamina"><td data-label="Atributo">Vitalidade</td><td data-label="Cada ponto dá">+5 Vida e +3 Estamina</td></tr>
+<tr data-search="vontade +5 sanidade e +3 mana"><td data-label="Atributo">Vontade</td><td data-label="Cada ponto dá">+5 Sanidade e +3 Mana</td></tr>
+<tr data-search="alma +3 mana"><td data-label="Atributo">Alma</td><td data-label="Cada ponto dá">+3 Mana</td></tr>
+<tr data-search="força +3 estamina"><td data-label="Atributo">Força</td><td data-label="Cada ponto dá">+3 Estamina</td></tr></tbody>
+  </table></div>
+    <p>Destreza e Razão não entram nas contas de recursos.</p>
+  </div>
+
+  <div class="tool-box">
+    <h3>Ajustando a Vida ao subir de nível</h3>
+    <p>O jogador distribui os pontos de atributo que ganhou e recalcula os recursos. Cada ponto que vai pra Vitalidade soma +5 na Vida e +3 na Estamina; o nível em si não dá Vida.</p>
+    <p>O bot de Discord faz o mesmo cálculo de duas formas: o <code>/calcular_recursos</code> serve pra simular com os números que o jogador digitar, e o <code>/minha_ficha</code> já mostra Vida, Sanidade, Mana e Estamina reais do personagem, recalculados sozinhos quando ele aumenta um atributo.</p>
+  </div>
+</section>
+
+<section class="chapter" id="bot-discord" data-section="ferramentas">
+  <header class="chapter-head">
+    <span class="chapter-num">II</span>
+    <h2>Bot de Discord</h2>
+  </header>
+  <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
+
+  <p>O bot do servidor rola dados, guarda o histórico e mantém a ficha automática de cada personagem.</p>
+
+  <h3>Pra começar</h3>
+  <p>Nessa ordem: <code>/personagem criar</code>, <code>/magia_inicial</code>, <code>/raca_inicial</code>, <code>/classe_social</code>, <code>/classe</code>, <code>/atributos</code> e <code>/minha_ficha</code>. Cada sorteio vale uma vez só por personagem, e o resultado aparece pra todo mundo. A classe também vale uma vez só. Se der erro, um mestre corrige.</p>
+
+  <h3>Atributos no bot</h3>
+  <p>O jogador distribui os pontos com <code>/atributos</code> (só preenche o que quer mudar) e só pode <b>aumentar</b>; pra diminuir, precisa de um mestre. O bot confere duas coisas: o total de pontos (6 na criação mais 1 a cada 2 níveis) e os limites de criação da raça (Humano: 3 em Força, Destreza e Vitalidade e 6 em Razão; Vampiro: 5 em Força, Destreza e Vitalidade; Vontade e Alma sem limite). Só os pontos que vêm de nível podem passar dos limites de criação, como explica o capítulo Progressão. Pro Dhampir, como os limites ainda não foram definidos, o bot só confere o total. O jogador precisa ter sorteado a raça antes. Os mestres podem definir atributos na mão, sem essas conferências.</p>
+
+  <h3>Limite de personagens</h3>
+  <p>Cada jogador pode ter até 3 personagens. Os mestres podem liberar vagas extras, na mão, até 10 no total. O jogador pode excluir um personagem quando quiser, mas a exclusão é permanente: a ficha, o XP e os ranks somem, a vaga é liberada e as rolagens antigas continuam no histórico.</p>
+
+  <h3>Comandos dos jogadores</h3>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Comando</th><th>O que faz</th></tr></thead>
+    <tbody>
+<tr data-search="/rolar rola um dado (ex: 1d20+3) e guarda no histórico, com motivo opcional"><td data-label="Comando"><span><code>/rolar</code></span></td><td data-label="O que faz">Rola um dado (ex: 1d20+3) e guarda no histórico, com motivo opcional</td></tr>
+<tr data-search="/historico mostra as últimas rolagens de alguém, ou de um personagem"><td data-label="Comando"><span><code>/historico</code></span></td><td data-label="O que faz">Mostra as últimas rolagens de alguém, ou de um personagem</td></tr>
+<tr data-search="/personagem criar, usar, listar, excluir cria, troca, lista e exclui personagens"><td data-label="Comando"><span><code>/personagem criar</code>, <code>usar</code>, <code>listar</code>, <code>excluir</code></span></td><td data-label="O que faz">Cria, troca, lista e exclui personagens</td></tr>
+<tr data-search="/magia_inicial sorteia o rank de magia"><td data-label="Comando"><span><code>/magia_inicial</code></span></td><td data-label="O que faz">Sorteia o Rank de magia</td></tr>
+<tr data-search="/raca_inicial sorteia a raça"><td data-label="Comando"><span><code>/raca_inicial</code></span></td><td data-label="O que faz">Sorteia a Raça</td></tr>
+<tr data-search="/classe_social sorteia o estado (e o clero, se for 1º estado)"><td data-label="Comando"><span><code>/classe_social</code></span></td><td data-label="O que faz">Sorteia o Estado (e o Clero, se for 1º Estado)</td></tr>
+<tr data-search="/classe escolhe a classe do personagem (uma vez só)"><td data-label="Comando"><span><code>/classe</code></span></td><td data-label="O que faz">Escolhe a classe do personagem (uma vez só)</td></tr>
+<tr data-search="/atributos distribui os pontos de atributo (só dá pra aumentar)"><td data-label="Comando"><span><code>/atributos</code></span></td><td data-label="O que faz">Distribui os pontos de atributo (só dá pra aumentar)</td></tr>
+<tr data-search="/minha_ficha mostra nível, xp, raça, classe social, rank de magia, classe, atributos, vida, sanidade, mana, estamina e ranks das perícias especiais"><td data-label="Comando"><span><code>/minha_ficha</code></span></td><td data-label="O que faz">Mostra nível, XP, Raça, Classe social, Rank de magia, Classe, Atributos, Vida, Sanidade, Mana, Estamina e Ranks das perícias especiais</td></tr>
+<tr data-search="/niveis mostra o xp e as vantagens de cada nível e marca o nível do personagem"><td data-label="Comando"><span><code>/niveis</code></span></td><td data-label="O que faz">Mostra o XP e as vantagens de cada nível e marca o nível do personagem</td></tr>
+<tr data-search="/extrato_xp mostra de onde veio o xp do personagem, com motivo e mestre"><td data-label="Comando"><span><code>/extrato_xp</code></span></td><td data-label="O que faz">Mostra de onde veio o XP do personagem, com motivo e mestre</td></tr>
+<tr data-search="/rank rank público de xp total, de personagens ou de jogadores (soma dos personagens de cada um)"><td data-label="Comando"><span><code>/rank</code></span></td><td data-label="O que faz">Rank público de XP total, de personagens ou de jogadores (soma dos personagens de cada um)</td></tr>
+<tr data-search="/calcular_recursos simula vida, sanidade, mana e estamina com os números que o jogador digitar e mostra a conta"><td data-label="Comando"><span><code>/calcular_recursos</code></span></td><td data-label="O que faz">Simula Vida, Sanidade, Mana e Estamina com os números que o jogador digitar e mostra a conta</td></tr></tbody>
+  </table></div>
+  <p>Vários comandos aceitam o campo opcional <code>personagem:</code> pra escolher qual personagem usar; sem ele, vale o que o jogador está usando.</p>
+
+  <h3>Comandos dos mestres</h3>
+  <p>Cargo Mestre ou permissão de Gerenciar Servidor.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Comando</th><th>O que faz</th></tr></thead>
+    <tbody>
+<tr data-search="/mestre dar_xp dá xp a um personagem; o nível sobe sozinho. número negativo tira xp, pra corrigir um engano"><td data-label="Comando"><span><code>/mestre dar_xp</code></span></td><td data-label="O que faz">Dá XP a um personagem; o nível sobe sozinho. Número negativo tira XP, pra corrigir um engano</td></tr>
+<tr data-search="/mestre upar atalho: dá o xp que falta pro próximo nível"><td data-label="Comando"><span><code>/mestre upar</code></span></td><td data-label="O que faz">Atalho: dá o XP que falta pro próximo nível</td></tr>
+<tr data-search="/mestre corrigir_nivel põe o personagem no começo de um nível"><td data-label="Comando"><span><code>/mestre corrigir_nivel</code></span></td><td data-label="O que faz">Põe o personagem no começo de um nível</td></tr>
+<tr data-search="/mestre rank_pericia define o rank (0 a 10) de uma perícia especial"><td data-label="Comando"><span><code>/mestre rank_pericia</code></span></td><td data-label="O que faz">Define o Rank (0 a 10) de uma perícia especial</td></tr>
+<tr data-search="/mestre apagar apaga rank de magia, raça, classe social ou tudo, pro jogador rolar de novo"><td data-label="Comando"><span><code>/mestre apagar</code></span></td><td data-label="O que faz">Apaga Rank de magia, Raça, Classe social ou tudo, pro jogador rolar de novo</td></tr>
+<tr data-search="/mestre corrigir_magia, corrigir_raca, corrigir_estado define o valor na mão, sem rolar"><td data-label="Comando"><span><code>/mestre corrigir_magia</code>, <code>corrigir_raca</code>, <code>corrigir_estado</code></span></td><td data-label="O que faz">Define o valor na mão, sem rolar</td></tr>
+<tr data-search="/mestre ficha mostra a ficha completa de um personagem"><td data-label="Comando"><span><code>/mestre ficha</code></span></td><td data-label="O que faz">Mostra a ficha completa de um personagem</td></tr>
+<tr data-search="/mestre jogador mostra quantos personagens o jogador tem, as vagas, o xp de cada um e quantos já excluiu"><td data-label="Comando"><span><code>/mestre jogador</code></span></td><td data-label="O que faz">Mostra quantos personagens o jogador tem, as vagas, o XP de cada um e quantos já excluiu</td></tr>
+<tr data-search="/mestre vagas define as vagas extras de personagem de um jogador"><td data-label="Comando"><span><code>/mestre vagas</code></span></td><td data-label="O que faz">Define as vagas extras de personagem de um jogador</td></tr>
+<tr data-search="/mestre excluir_personagem exclui pra sempre o personagem de outro jogador (pede confirmação e avisa o jogador)"><td data-label="Comando"><span><code>/mestre excluir_personagem</code></span></td><td data-label="O que faz">Exclui pra sempre o personagem de outro jogador (pede confirmação e avisa o jogador)</td></tr>
+<tr data-search="/mestre atributos define atributos na mão, sem conferir pontos nem limites (pode diminuir)"><td data-label="Comando"><span><code>/mestre atributos</code></span></td><td data-label="O que faz">Define atributos na mão, sem conferir pontos nem limites (pode diminuir)</td></tr>
+<tr data-search="/mestre corrigir_classe define a classe na mão, mesmo depois de o jogador já ter escolhido"><td data-label="Comando"><span><code>/mestre corrigir_classe</code></span></td><td data-label="O que faz">Define a classe na mão, mesmo depois de o jogador já ter escolhido</td></tr>
+<tr data-search="/mestre exportar manda ao mestre uma cópia de segurança do banco de dados (só ele vê)"><td data-label="Comando"><span><code>/mestre exportar</code></span></td><td data-label="O que faz">Manda ao mestre uma cópia de segurança do banco de dados (só ele vê)</td></tr></tbody>
+  </table></div>
+  <p>Toda rolagem e toda ação de mestre ficam registradas.</p>
 </section>
 <section class="chapter" id="em-aberto" data-section="sistema">
   <header class="chapter-head">
-    <span class="chapter-num">XIV</span>
+    <span class="chapter-num">XV</span>
     <h2>Em Aberto</h2>
   </header>
   <svg class="ornament" viewBox="0 0 200 20" aria-hidden="true"><line x1="0" y1="10" x2="85" y2="10"/><path d="M100 2 L108 10 L100 18 L92 10 Z"/><line x1="115" y1="10" x2="200" y2="10"/></svg>
@@ -1526,6 +1683,10 @@ footer{
     <li>Economia e dinheiro</li>
     <li>Ficha de lore (documento separado)</li>
     <li>Honra e Reputação (ainda será feito)</li>
+    <li>Limites de atributo do Dhampir</li>
+    <li>O quanto as fraquezas que o Dhampir mantém são mais fracas que as do vampiro</li>
+    <li>Vantagens e restrições de cada Estado e de Alto e Baixo Clero</li>
+    <li>As Disciplinas vampíricas (grau 0 a 5) ainda não aparecem na ficha do bot</li>
   </ul>
 </section>
 <section class="chapter" id="npcs" data-section="npcs">
